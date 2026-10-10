@@ -1,0 +1,35 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="on-dark">
+  <div class="wrap row mono muted">
+    <span>© {new Date().getFullYear()} {site.name}</span>
+    <span class="credit">
+      Photos:
+      <a href="https://unsplash.com/photos/rolling-green-hills-under-a-bright-blue-sky-q0lB6w0z6Ns" rel="noopener noreferrer">Spencer DeMera</a>,
+      <a href="https://unsplash.com/photos/people-standing-on-green-grass-field-near-green-mountain-covered-with-fog-during-daytime-TLoX_bmGeBE" rel="noopener noreferrer">Taneli Lahtinen</a>
+      on Unsplash
+    </span>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<style>
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem;
+  }
+  a {
+    text-decoration: none;
+    padding-block: 0.5rem;
+  }
+  .credit a {
+    text-decoration: underline;
+  }
+  .row {
+    flex-wrap: wrap;
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+import { stack } from '../data/site';
+---
+
+<section id="stack" class="section on-dark" aria-labelledby="stack-h">
+  <div class="wrap">
+    <p class="mono muted reveal">03 / Stack</p>
+    <h2 id="stack-h" class="serif reveal">Tools I reach for.</h2>
+    <dl>
+      {
+        stack.map((g, i) => (
+          <div class="row reveal" style={`--d:${i * 90}ms`}>
+            <dt class="mono muted">{g.label}</dt>
+            <dd class="mono">{g.items.join(' · ')}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  h2 {
+    margin: 1.5rem 0 3.5rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+  }
+  dl {
+    margin: 0;
+  }
+  .row {
+    display: grid;
+    gap: 0.5rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid rgb(246 248 247 / 0.2);
+  }
+  dd {
+    margin: 0;
+    line-height: 1.9;
+    text-transform: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  @media (min-width: 900px) {
+    .row {
+      grid-template-columns: 1fr 3fr;
+    }
+  }
+</style>

@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800" role="img" aria-labelledby="janus-res-t janus-res-d" lang="en">
+<title id="janus-res-t">Janus vs. browser_use: task success by site</title>
+<desc id="janus-res-d">Horizontal bars with 95% Wilson intervals. Development split v1, 29 tasks at N=3: browser_use baseline 40 of 87, Janus E5 57 of 87, Janus E14 72 of 87. Held-out test split, Janus E5 only: 24 of 36. No baseline was run on the test split and E14 was not evaluated on it.</desc>
+<defs>
+<marker id="janus-res-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" fill="#f6f8f7" fill-opacity="0.7"/></marker>
+<pattern id="janus-res-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#0f2218" stroke-width="2.4" stroke-opacity="0.45"/></pattern>
+</defs>
+<rect width="1280" height="800" fill="#1c3a28"/>
+<text x="60.0" y="52.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400" letter-spacing="1.4">JANUS  /  RESULTS</text>
+<text x="60.0" y="94.0" font-family="&#x27;Fraunces Variable&#x27;, &#x27;Iowan Old Style&#x27;, Georgia, serif" font-size="34" fill="#f6f8f7" font-weight="300">Task success by site.</text>
+<text x="60.0" y="122.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#9db9b6" font-weight="400" letter-spacing="0.4">Local qwen3:8b for both agents  ·  fictional replica sites  ·  N=3 repeats per task  ·  state-checked scoring</text>
+<text x="60.0" y="168.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="500" letter-spacing="1.2">DEVELOPMENT SPLIT V1</text>
+<text x="60.0" y="186.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">29 tasks, 3 repeats each</text>
+<text x="60.0" y="222.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">Overall</text>
+<text x="151.0" y="222.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">29 tasks · 87 runs</text>
+<line x1="262.0" y1="228.0" x2="262.0" y2="316.0" stroke="#dce7e4" stroke-width="1" opacity="0.35"/>
+<text x="250.0" y="249.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">browser_use  (B1)</text>
+<rect x="262.0" y="236.0" width="183.9" height="17.0" rx="1.5" fill="#6e9a9a"/>
+<line x1="405.6" y1="244.5" x2="487.6" y2="244.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="405.6" y1="239.5" x2="405.6" y2="249.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="487.6" y1="239.5" x2="487.6" y2="249.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="405.6" y1="244.5" x2="487.6" y2="244.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="405.6" y1="239.5" x2="405.6" y2="249.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="487.6" y1="239.5" x2="487.6" y2="249.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="249.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">40/87  ·  46%</text>
+<text x="250.0" y="279.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E5</text>
+<rect x="262.0" y="266.0" width="262.1" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="482.3" y1="274.5" x2="560.6" y2="274.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="482.3" y1="269.5" x2="482.3" y2="279.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="560.6" y1="269.5" x2="560.6" y2="279.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="482.3" y1="274.5" x2="560.6" y2="274.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="482.3" y1="269.5" x2="482.3" y2="279.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="560.6" y1="269.5" x2="560.6" y2="279.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="279.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">57/87  ·  66%</text>
+<text x="250.0" y="309.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E14  (latest dev)</text>
+<rect x="262.0" y="296.0" width="331.0" height="17.0" rx="1.5" fill="#4fb22e"/>
+<rect x="262.0" y="296.0" width="331.0" height="17.0" rx="1.5" fill="url(#janus-res-hatch)"/>
+<line x1="555.9" y1="304.5" x2="619.1" y2="304.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="555.9" y1="299.5" x2="555.9" y2="309.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="619.1" y1="299.5" x2="619.1" y2="309.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="555.9" y1="304.5" x2="619.1" y2="304.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="555.9" y1="299.5" x2="555.9" y2="309.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="619.1" y1="299.5" x2="619.1" y2="309.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="309.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">72/87  ·  83%</text>
+<text x="60.0" y="360.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">Nagarpalika</text>
+<text x="195.0" y="360.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">14 tasks · 42 runs</text>
+<line x1="262.0" y1="366.0" x2="262.0" y2="454.0" stroke="#dce7e4" stroke-width="1" opacity="0.35"/>
+<text x="250.0" y="387.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">browser_use  (B1)</text>
+<rect x="262.0" y="374.0" width="181.0" height="17.0" rx="1.5" fill="#6e9a9a"/>
+<line x1="386.9" y1="382.5" x2="502.2" y2="382.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="386.9" y1="377.5" x2="386.9" y2="387.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="502.2" y1="377.5" x2="502.2" y2="387.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="386.9" y1="382.5" x2="502.2" y2="382.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="386.9" y1="377.5" x2="386.9" y2="387.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="502.2" y1="377.5" x2="502.2" y2="387.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="387.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">19/42  ·  45%</text>
+<text x="250.0" y="417.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E5</text>
+<rect x="262.0" y="404.0" width="400.0" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="628.5" y1="412.5" x2="662.0" y2="412.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="628.5" y1="407.5" x2="628.5" y2="417.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="662.0" y1="407.5" x2="662.0" y2="417.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="628.5" y1="412.5" x2="662.0" y2="412.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="628.5" y1="407.5" x2="628.5" y2="417.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="662.0" y1="407.5" x2="662.0" y2="417.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="417.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">42/42  ·  100%</text>
+<text x="250.0" y="447.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E14  (latest dev)</text>
+<rect x="262.0" y="434.0" width="400.0" height="17.0" rx="1.5" fill="#4fb22e"/>
+<rect x="262.0" y="434.0" width="400.0" height="17.0" rx="1.5" fill="url(#janus-res-hatch)"/>
+<line x1="628.5" y1="442.5" x2="662.0" y2="442.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="628.5" y1="437.5" x2="628.5" y2="447.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="662.0" y1="437.5" x2="662.0" y2="447.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="628.5" y1="442.5" x2="662.0" y2="442.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="628.5" y1="437.5" x2="628.5" y2="447.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="662.0" y1="437.5" x2="662.0" y2="447.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="447.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">42/42  ·  100%</text>
+<text x="60.0" y="498.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">ShareSewa</text>
+<text x="173.0" y="498.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">15 tasks · 45 runs</text>
+<line x1="262.0" y1="504.0" x2="262.0" y2="592.0" stroke="#dce7e4" stroke-width="1" opacity="0.35"/>
+<text x="250.0" y="525.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">browser_use  (B1)</text>
+<rect x="262.0" y="512.0" width="186.7" height="17.0" rx="1.5" fill="#6e9a9a"/>
+<line x1="393.7" y1="520.5" x2="505.7" y2="520.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="393.7" y1="515.5" x2="393.7" y2="525.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="505.7" y1="515.5" x2="505.7" y2="525.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="393.7" y1="520.5" x2="505.7" y2="520.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="393.7" y1="515.5" x2="393.7" y2="525.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="505.7" y1="515.5" x2="505.7" y2="525.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="525.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">21/45  ·  47%</text>
+<text x="250.0" y="555.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E5</text>
+<rect x="262.0" y="542.0" width="133.3" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="347.4" y1="550.5" x2="453.7" y2="550.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="347.4" y1="545.5" x2="347.4" y2="555.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="453.7" y1="545.5" x2="453.7" y2="555.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="347.4" y1="550.5" x2="453.7" y2="550.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="347.4" y1="545.5" x2="347.4" y2="555.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="453.7" y1="545.5" x2="453.7" y2="555.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="555.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">15/45  ·  33%</text>
+<text x="250.0" y="585.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11.5" fill="#dce7e4" font-weight="400" text-anchor="end">Janus  E14  (latest dev)</text>
+<rect x="262.0" y="572.0" width="266.7" height="17.0" rx="1.5" fill="#4fb22e"/>
+<rect x="262.0" y="572.0" width="266.7" height="17.0" rx="1.5" fill="url(#janus-res-hatch)"/>
+<line x1="470.3" y1="580.5" x2="576.6" y2="580.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="470.3" y1="575.5" x2="470.3" y2="585.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="576.6" y1="575.5" x2="576.6" y2="585.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="470.3" y1="580.5" x2="576.6" y2="580.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="470.3" y1="575.5" x2="470.3" y2="585.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="576.6" y1="575.5" x2="576.6" y2="585.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="678.0" y="585.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">30/45  ·  67%</text>
+<text x="262.0" y="640.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400" text-anchor="middle">0%</text>
+<text x="462.0" y="640.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400" text-anchor="middle">50%</text>
+<text x="662.0" y="640.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400" text-anchor="middle">100%</text>
+<line x1="810.0" y1="150.0" x2="810.0" y2="640.0" stroke="#dce7e4" stroke-width="1" opacity="0.2"/>
+<text x="850.0" y="168.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="500" letter-spacing="1.2">HELD-OUT TEST SPLIT</text>
+<text x="850.0" y="186.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">12 tasks · 36 runs · Janus E5 only</text>
+<text x="850.0" y="222.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">Overall</text>
+<text x="941.0" y="222.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">12 tasks · 36 runs</text>
+<rect x="850.0" y="236.0" width="126.7" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="945.6" y1="244.5" x2="1001.6" y2="244.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="945.6" y1="239.5" x2="945.6" y2="249.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="1001.6" y1="239.5" x2="1001.6" y2="249.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="945.6" y1="244.5" x2="1001.6" y2="244.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="945.6" y1="239.5" x2="945.6" y2="249.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="1001.6" y1="239.5" x2="1001.6" y2="249.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="1054.0" y="249.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">24/36  ·  67%</text>
+<text x="850.0" y="360.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">Nagarpalika</text>
+<text x="985.0" y="360.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">6 tasks · 18 runs</text>
+<rect x="850.0" y="374.0" width="190.0" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="1006.6" y1="382.5" x2="1040.0" y2="382.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="1006.6" y1="377.5" x2="1006.6" y2="387.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="1040.0" y1="377.5" x2="1040.0" y2="387.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="1006.6" y1="382.5" x2="1040.0" y2="382.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="1006.6" y1="377.5" x2="1006.6" y2="387.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="1040.0" y1="377.5" x2="1040.0" y2="387.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="1054.0" y="387.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">18/18  ·  100%</text>
+<text x="850.0" y="498.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="15" fill="#f6f8f7" font-weight="600">ShareSewa</text>
+<text x="963.0" y="498.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">6 tasks · 18 runs</text>
+<rect x="850.0" y="512.0" width="63.3" height="17.0" rx="1.5" fill="#dce7e4"/>
+<line x1="880.9" y1="520.5" x2="956.9" y2="520.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="880.9" y1="515.5" x2="880.9" y2="525.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="956.9" y1="515.5" x2="956.9" y2="525.5" stroke="#0f2218" stroke-width="4.2"/>
+<line x1="880.9" y1="520.5" x2="956.9" y2="520.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="880.9" y1="515.5" x2="880.9" y2="525.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<line x1="956.9" y1="515.5" x2="956.9" y2="525.5" stroke="#f6f8f7" stroke-width="1.6"/>
+<text x="1054.0" y="525.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#f6f8f7" font-weight="400">6/18  ·  33%</text>
+<text x="850.0" y="600.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="500">No baseline run on this split.</text>
+<text x="850.0" y="615.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="500">E14 and later: not evaluated here.</text>
+<line x1="60.0" y1="654.0" x2="1220.0" y2="654.0" stroke="#dce7e4" stroke-width="1" opacity="0.25"/>
+<text x="60.0" y="676.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">Janus was tuned on dev split v1 across the E-series experiments (to E16); the baseline was not re-tuned. Hatched = later, more-tuned state (E15 and E16 reproduce E14 run for run).</text>
+<text x="60.0" y="695.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">Whiskers: 95% Wilson interval over runs. Repeats of the same tasks are not independent, so the true uncertainty is wider than shown.</text>
+<text x="60.0" y="714.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">E14 includes 3 crashed runs (share-06, KeyError) scored as failures.  Wall time: Janus 14s mean; browser_use 454s mean, 290s median (two runs of 6,200 to 6,800s).</text>
+<text x="60.0" y="733.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400">Fictional replica sites written by the Janus author, 14 + 15 tasks: a controlled comparison, not a general web-agent benchmark.</text>
+</svg>

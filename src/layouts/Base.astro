@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: 'Backend Engineer',
+  url: site.url,
+  email: site.email,
+  sameAs: [site.github, site.linkedin],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{site.title}</title>
+    <meta name="description" content={site.description} />
+    <meta name="author" content={site.name} />
+    <link rel="canonical" href={site.url} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={site.title} />
+    <meta property="og:description" content={site.description} />
+    <meta property="og:url" content={site.url} />
+    <meta name="theme-color" content="#1c3a28" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <slot />
+    <script>
+      const els = document.querySelectorAll<HTMLElement>('.reveal');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px' },
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('in'));
+      }
+    </script>
+    <script>
+      // Pause ambient animation (clouds, fog, shade) while its section is off-screen.
+      const ambient = document.querySelectorAll<HTMLElement>('[data-ambient]');
+      if ('IntersectionObserver' in window) {
+        const watch = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            const el = e.target as HTMLElement;
+            if (e.isIntersecting) el.removeAttribute('data-offscreen');
+            else el.setAttribute('data-offscreen', '');
+          }
+        });
+        ambient.forEach((el) => watch.observe(el));
+      }
+    </script>
+  </body>
+</html>

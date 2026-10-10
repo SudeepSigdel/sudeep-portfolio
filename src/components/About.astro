@@ -1,0 +1,56 @@
+---
+---
+
+<section id="about" class="section on-dark" aria-labelledby="about-h">
+  <div class="wrap grid">
+    <p class="mono muted reveal">01 / About</p>
+    <div class="body">
+      <h2 id="about-h" class="serif reveal">Quiet systems, built to hold under load.</h2>
+      <div class="cols reveal">
+        <p>
+          I'm a backend engineer from Nepal and a final-year BSc. CSIT student at Tribhuvan University
+          (expected 2027). I like the unglamorous parts of a system: permissions, data models, validation, and
+          the places where things quietly break.
+        </p>
+        <p>
+          Since August I've been an intern at Technest Innovation, where I work on RestaurantMS, a
+          multi-tenant billing and order system that is live in production. Outside work I build ML-backed
+          services and agents that treat the model as untrusted.
+        </p>
+      </div>
+      <p class="mono muted reveal">Kawasoti, Nawalpur, Nepal</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+  }
+  h2 {
+    margin: 0 0 3rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+    max-width: 18ch;
+  }
+  .cols {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 62ch;
+  }
+  .cols p {
+    margin: 0;
+  }
+  .body > .mono {
+    margin: 3rem 0 0;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr 3fr;
+    }
+    .grid > .mono {
+      margin: 0.6rem 0 0;
+    }
+  }
+</style>

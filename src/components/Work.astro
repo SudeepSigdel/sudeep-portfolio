@@ -1,0 +1,260 @@
+---
+import { featured, earlier, type Project } from '../data/site';
+
+// Generated figures (scripts/assets/*), inlined so they inherit the site's fonts.
+const svgs = import.meta.glob('../assets/projects/*/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+function figureSvg(key: string): string {
+  const svg = svgs[`../assets/projects/${key}.svg`];
+  if (!svg) throw new Error(`Missing figure: src/assets/projects/${key}.svg`);
+  return svg;
+}
+
+const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[] = [
+  { label: 'Selected work', tier: 'featured', items: featured },
+  { label: 'Earlier', tier: 'earlier', items: earlier },
+];
+---
+
+<section id="work" class="section" aria-labelledby="work-h">
+  <div class="wrap">
+    <p class="mono muted reveal">02 / Work</p>
+    <h2 id="work-h" class="serif reveal">What I've been building.</h2>
+
+    {
+      groups.map((g) => (
+        <div class={`group ${g.tier}`}>
+          <h3 class="mono muted">{g.label}</h3>
+          <ol>
+            {g.items.map((p) => (
+              <li class="reveal">
+                <hr class="rule" />
+                <article class="row">
+                  <span class="mono idx">{p.index}</span>
+                  <div class="main">
+                    <h4 class="serif">{p.title}</h4>
+                    <p class="mono muted kicker">{p.kicker}</p>
+                    <p class="sum">{p.summary}</p>
+                    {p.detail && <p class="sum muted">{p.detail}</p>}
+                    {p.href && (
+                      <p class="link">
+                        <a href={p.href} target="_blank" rel="noopener noreferrer">
+                          <span>{p.hrefLabel}</span>
+                          <span aria-hidden="true"> ↗</span>
+                          <span class="sr">(opens in a new tab)</span>
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                  <ul class="mono tags" aria-label={`${p.title} stack`}>
+                    {p.stack.map((s) => (
+                      <li>{s}</li>
+                    ))}
+                  </ul>
+                  {p.figures && (
+                    <div class="figs">
+                      {p.figures.map((f, i) => (
+                        <details class="fig" open={i === 0}>
+                          <summary class="mono">
+                            <span class="fig-label">{f.label}</span>
+                            <span class="fig-toggle" aria-hidden="true" />
+                          </summary>
+                          <figure>
+                            <p class="mono muted hint" aria-hidden="true">Scroll sideways →</p>
+                            <div
+                              class="plate"
+                              role="region"
+                              tabindex="0"
+                              aria-label={`${p.title}: ${f.label}. Scrolls sideways on narrow screens.`}
+                              set:html={figureSvg(f.key)}
+                            />
+                            <figcaption class="mono muted">{f.caption}</figcaption>
+                          </figure>
+                        </details>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  h2 {
+    margin: 1.5rem 0 4rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+  }
+  .group {
+    margin-bottom: 6rem;
+  }
+  .group h3 {
+    margin: 0 0 1.5rem;
+    font-weight: 400;
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .row {
+    display: grid;
+    gap: 1rem;
+    padding-block: 2.25rem 2.75rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .idx {
+    color: var(--ink-soft);
+    padding-top: 0.6rem;
+    transition: color 0.5s var(--ease);
+  }
+  h4 {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    transition: transform 0.6s var(--ease);
+  }
+  .featured h4 {
+    font-size: clamp(2.25rem, 5vw, 4rem);
+  }
+  .featured .row {
+    padding-block: 3rem 3.75rem;
+  }
+  .kicker {
+    margin: 0.75rem 0 1.5rem;
+  }
+  .sum {
+    margin: 0 0 0.85rem;
+    max-width: 58ch;
+  }
+  .featured .sum:first-of-type {
+    font-size: 1.125em;
+  }
+  .figs {
+    grid-column: 1 / -1;
+    margin-top: 1.5rem;
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+  .fig,
+  .fig figure {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fig {
+    border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  .fig summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3rem;
+    cursor: pointer;
+    list-style: none;
+    color: var(--ink);
+  }
+  .fig summary::-webkit-details-marker {
+    display: none;
+  }
+  .fig-toggle::before {
+    content: '+';
+    font-size: 1.1rem;
+  }
+  .fig[open] .fig-toggle::before {
+    content: '\2212';
+  }
+  .fig figure {
+    margin: 0 0 1rem;
+  }
+  .hint {
+    margin: 0 0 0.5rem;
+  }
+  @media (min-width: 1200px) {
+    .hint {
+      display: none;
+    }
+  }
+  .plate {
+    max-width: 100%;
+    overflow-x: auto;
+    background: var(--forest);
+    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  }
+  .plate :global(svg) {
+    display: block;
+    width: 100%;
+    min-width: 1080px;
+    height: auto;
+  }
+  figcaption {
+    margin-top: 0.75rem;
+    max-width: 90ch;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .link {
+    margin: 1.25rem 0 0;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+  .link a {
+    display: inline-block;
+    padding-block: 0.5rem;
+    text-decoration: none;
+    background: linear-gradient(var(--forest), var(--forest)) 0 calc(100% - 0.35rem) / 100% 1px no-repeat;
+    transition: background-size 0.5s var(--ease);
+  }
+  .link a:hover,
+  .link a:focus-visible {
+    background-size: 0 1px;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--ink-soft);
+    align-content: start;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (hover: hover) {
+    .row:hover .idx {
+      color: var(--ink);
+    }
+    .row:hover h4 {
+      transform: translateX(0.35rem);
+    }
+  }
+  @media (min-width: 900px) {
+    .figs {
+      grid-column: 2 / -1;
+    }
+    .row {
+      grid-template-columns: 4rem minmax(0, 1fr) 14rem;
+      gap: 2rem;
+    }
+    .tags {
+      flex-direction: column;
+      gap: 0.35rem;
+      padding-top: 0.75rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .row:hover h4 {
+      transform: none;
+    }
+  }
+</style>

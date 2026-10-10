@@ -1,0 +1,153 @@
+---
+import { Image } from 'astro:assets';
+import ridge from '../assets/landscapes/closing-ridge.jpg';
+import fog from '../assets/ambient/fog.webp';
+import { site } from '../data/site';
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-h" data-ambient>
+  <Image
+    class="bg"
+    src={ridge}
+    alt="Three small hikers cross a green mountain slope while cloud drifts through the valley behind them."
+    widths={[900, 1600, 2400]}
+    sizes="100vw"
+    loading="lazy"
+    quality={85}
+  />
+  <div class="mist" aria-hidden="true">
+    <img class="fog f1" src={fog.src} width={fog.width} height={fog.height} alt="" decoding="async" loading="lazy" />
+    <img class="fog f2" src={fog.src} width={fog.width} height={fog.height} alt="" decoding="async" loading="lazy" />
+  </div>
+  <div class="veil" aria-hidden="true"></div>
+  <div class="wrap copy reveal">
+    <p class="mono">04 / Contact</p>
+    <h2 id="contact-h" class="serif">Let's build something careful.</h2>
+    <p class="mail"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    <ul class="mono links">
+      <li><a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a href={site.cv} download>Résumé (PDF)</a></li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+    min-height: 90svh;
+    display: grid;
+    align-items: center;
+    color: var(--cloud);
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--forest);
+    padding-block: var(--section-y);
+  }
+  .bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 78%;
+    z-index: -2;
+  }
+  .veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* The fog is bright: tone it down behind the copy (top-left) and keep the hikers clear */
+    background:
+      linear-gradient(to bottom, rgb(15 34 24 / 0.78), rgb(15 34 24 / 0.5) 45%, rgb(15 34 24 / 0.08) 70%),
+      linear-gradient(95deg, rgb(15 34 24 / 0.55), transparent 65%);
+  }
+  .mist {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .fog {
+    position: absolute;
+    height: auto;
+    max-width: none;
+    opacity: 0.3;
+  }
+  .f1 {
+    top: 12%;
+    left: -20%;
+    width: min(120vw, 1900px);
+  }
+  .f2 {
+    top: 30%;
+    right: -30%;
+    width: min(90vw, 1400px);
+    opacity: 0.22;
+  }
+  .copy {
+    align-self: start;
+  }
+  h2 {
+    margin: 1.5rem 0 2rem;
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    max-width: 14ch;
+  }
+  .mail {
+    margin: 0 0 2.5rem;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    overflow-wrap: anywhere;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .links a {
+    display: inline-block;
+    padding-block: 0.6rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bg {
+      animation: breathe 60s ease-in-out infinite alternate;
+    }
+    .f1 {
+      animation: mist-r 120s ease-in-out infinite alternate;
+    }
+    .f2 {
+      animation: mist-l 160s ease-in-out infinite alternate;
+    }
+    [data-ambient][data-offscreen] * {
+      animation-play-state: paused;
+    }
+    @keyframes breathe {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.05) translate3d(0.8%, -0.6%, 0);
+      }
+    }
+    @keyframes mist-r {
+      from {
+        transform: translate3d(-3%, 0, 0);
+      }
+      to {
+        transform: translate3d(12%, 3%, 0);
+      }
+    }
+    @keyframes mist-l {
+      from {
+        transform: translate3d(3%, 0, 0);
+      }
+      to {
+        transform: translate3d(-14%, -3%, 0);
+      }
+    }
+  }
+</style>

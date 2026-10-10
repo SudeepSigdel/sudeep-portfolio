@@ -1,0 +1,236 @@
+---
+const links = [
+  { id: 'about', n: '01', label: 'About' },
+  { id: 'work', n: '02', label: 'Work' },
+  { id: 'stack', n: '03', label: 'Stack' },
+  { id: 'contact', n: '04', label: 'Contact' },
+];
+---
+
+<nav class="nav" aria-label="Primary" data-nav>
+  <div class="bar wrap">
+    <a class="mono mark" href="#top" aria-label="Sudeep Sigdel, back to top">SS</a>
+    <span class="mono label" data-label aria-hidden="true"></span>
+
+    <button
+      class="mono toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      data-toggle
+    >
+      Menu
+    </button>
+
+    <ul id="nav-links" class="mono links" data-links>
+      {
+        links.map((l) => (
+          <li>
+            <a href={`#${l.id}`} data-link={l.id} data-n={l.n} data-name={l.label}>
+              <span class="n" aria-hidden="true">{l.n}</span>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    color: var(--cloud);
+    transition:
+      background-color 0.5s var(--ease),
+      border-color 0.5s var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+  /* Over the bright hero the bar uses dark type; it flips to light on the solid bar and the open menu */
+  .nav:not(.solid):not(.open) {
+    color: var(--pine);
+  }
+  .nav:not(.solid):not(.open) :focus-visible {
+    outline-color: var(--pine);
+  }
+  .nav.solid {
+    background: var(--pine);
+    border-bottom-color: rgb(246 248 247 / 0.14);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 3.5rem;
+  }
+  a {
+    text-decoration: none;
+  }
+  .mark {
+    letter-spacing: 0.2em;
+    padding-block: 0.9rem;
+  }
+  .label {
+    opacity: 0;
+    transition: opacity 0.5s var(--ease);
+    color: var(--haze-text);
+    white-space: nowrap;
+  }
+  .nav.solid .label {
+    opacity: 1;
+  }
+
+  .links {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2.25rem);
+    list-style: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+  }
+  .links a {
+    display: inline-block;
+    padding-block: 1rem;
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.7rem) / 0 1px no-repeat;
+    transition: background-size 0.5s var(--ease);
+  }
+  .links a:hover,
+  .links a:focus-visible,
+  .links a[aria-current='true'] {
+    background-size: 100% 1px;
+  }
+  .n {
+    display: none;
+  }
+  .toggle {
+    display: none;
+  }
+
+  /* Small screens: collapse links into a menu once JS is available */
+  @media (max-width: 760px) {
+    :global(.js) .toggle {
+      display: inline-flex;
+      align-items: center;
+      margin-left: auto;
+      min-height: 2.75rem;
+      padding: 0 0.25rem;
+      background: none;
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+    :global(.js) .links {
+      display: none;
+      position: absolute;
+      inset: 100% 0 auto 0;
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 0.5rem var(--gutter) 1.25rem;
+      background: var(--pine);
+      border-bottom: 1px solid rgb(246 248 247 / 0.14);
+    }
+    :global(.js) .nav.open .links {
+      display: flex;
+    }
+    :global(.js) .links a {
+      display: flex;
+      gap: 1rem;
+      min-height: 3rem;
+      align-items: center;
+      padding-block: 0;
+      background: none;
+    }
+    :global(.js) .links a[aria-current='true'] {
+      color: var(--meadow);
+    }
+    :global(.js) .n {
+      display: inline;
+      color: var(--haze-text);
+    }
+    :global(.js) .nav.open {
+      background: var(--pine);
+    }
+    /* without JS, let the links wrap beneath the mark */
+    .bar {
+      flex-wrap: wrap;
+    }
+    .links {
+      margin-left: 0;
+      gap: 0.25rem 1.25rem;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  if (nav) {
+    const label = nav.querySelector<HTMLElement>('[data-label]')!;
+    const toggle = nav.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>('[data-link]'));
+    const hero = document.querySelector('.hero');
+
+    // Solid bar once the hero has scrolled away
+    if (hero && 'IntersectionObserver' in window) {
+      new IntersectionObserver(
+        ([e]) => nav.classList.toggle('solid', !e.isIntersecting),
+        { rootMargin: '-56px 0px 0px 0px' },
+      ).observe(hero);
+    } else {
+      nav.classList.add('solid');
+    }
+
+    // Current section: the one crossing the middle of the viewport
+    const setActive = (id: string | null) => {
+      for (const a of links) {
+        if (a.dataset.link === id) {
+          a.setAttribute('aria-current', 'true');
+          label.textContent = `${a.dataset.n} / ${a.dataset.name}`;
+        } else a.removeAttribute('aria-current');
+      }
+      if (!id) label.textContent = '';
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
+        },
+        { rootMargin: '-45% 0px -50% 0px' },
+      );
+      for (const a of links) {
+        const s = document.getElementById(a.dataset.link!);
+        if (s) io.observe(s);
+      }
+      if (hero)
+        new IntersectionObserver(([e]) => e.isIntersecting && setActive(null), {
+          rootMargin: '-45% 0px -50% 0px',
+        }).observe(hero);
+    }
+
+    // Mobile menu
+    const setOpen = (open: boolean) => {
+      nav.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.textContent = open ? 'Close' : 'Menu';
+    };
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('open')));
+    for (const a of links) a.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (nav.classList.contains('open') && !nav.contains(e.target as Node)) setOpen(false);
+    });
+    window.matchMedia('(min-width: 761px)').addEventListener('change', (m) => m.matches && setOpen(false));
+  }
+</script>

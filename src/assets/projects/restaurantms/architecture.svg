@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 880" width="1280" height="880" role="img" aria-labelledby="rms-arch-t rms-arch-d" lang="en">
+<title id="rms-arch-t">RestaurantMS architecture</title>
+<desc id="rms-arch-d">Five client roles use one Next.js app. It talks to a Django REST API and to Django Channels WebSockets, both authenticated with JWT. Domain apps sit inside a tenant boundary with server-side permissions. PostgreSQL stores data; Redis serves the cache and the WebSocket channel layer. Docker Compose and GitHub Actions deliver and test it.</desc>
+<defs>
+<marker id="rms-arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1 L9 5 L0 9 z" fill="#f6f8f7" fill-opacity="0.7"/></marker>
+<pattern id="rms-arch-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#0f2218" stroke-width="2.4" stroke-opacity="0.45"/></pattern>
+</defs>
+<rect width="1280" height="880" fill="#1c3a28"/>
+<text x="60.0" y="52.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#9db9b6" font-weight="400" letter-spacing="1.4">RESTAURANTMS  /  ARCHITECTURE</text>
+<text x="60.0" y="94.0" font-family="&#x27;Fraunces Variable&#x27;, &#x27;Iowan Old Style&#x27;, Georgia, serif" font-size="34" fill="#f6f8f7" font-weight="300">One tenant at a time.</text>
+<text x="60.0" y="122.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="12" fill="#9db9b6" font-weight="400" letter-spacing="0.4">Multi-tenant restaurant and lodge operations  ·  permissions enforced on the server  ·  live updates are signals, not data</text>
+<text x="60.0" y="152.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="500" letter-spacing="1.0">CLIENTS  ·  ONE NEXT.JS APP (APP ROUTER), TANSTACK QUERY, A ROUTE GROUP PER ROLE</text>
+<rect x="60.0" y="168.0" width="220.0" height="70.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="74.0" y="192.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="13.5" fill="#f6f8f7" font-weight="600">Waiter</text>
+<text x="74.0" y="210.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">mobile-first</text>
+<text x="74.0" y="226.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400">(waiter)</text>
+<rect x="300.0" y="168.0" width="220.0" height="70.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="314.0" y="192.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="13.5" fill="#f6f8f7" font-weight="600">Manager and front desk</text>
+<text x="314.0" y="210.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">desktop-first</text>
+<text x="314.0" y="226.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400">(app)</text>
+<rect x="540.0" y="168.0" width="220.0" height="70.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="554.0" y="192.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="13.5" fill="#f6f8f7" font-weight="600">Kitchen display</text>
+<text x="554.0" y="210.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">KDS queue</text>
+<text x="554.0" y="226.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400">(kitchen)</text>
+<rect x="780.0" y="168.0" width="220.0" height="70.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="794.0" y="192.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="13.5" fill="#f6f8f7" font-weight="600">Guests</text>
+<text x="794.0" y="210.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">QR menu, reviews</text>
+<text x="794.0" y="226.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400">(public)  [tenantSlug]</text>
+<rect x="1020.0" y="168.0" width="220.0" height="70.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="1034.0" y="192.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="13.5" fill="#f6f8f7" font-weight="600">Platform admin</text>
+<text x="1034.0" y="210.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">tenants and plans</text>
+<text x="1034.0" y="226.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400">(server)</text>
+<path d="M410.0 238 V280" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)"/>
+<path d="M1020.0 238 V280" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)"/>
+<rect x="60.0" y="280.0" width="700.0" height="92.0" rx="3" fill="#0f2218" stroke="#4fb22e" stroke-width="1.6"/>
+<text x="74.0" y="305.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">REST API  ·  /api/v1/</text>
+<text x="74.0" y="324.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Django 5, Django REST Framework.</text>
+<text x="74.0" y="338.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">JWT access and refresh tokens, refresh blacklist on logout.</text>
+<rect x="800.0" y="280.0" width="440.0" height="92.0" rx="3" fill="#0f2218" stroke="#4fb22e" stroke-width="1.6"/>
+<text x="814.0" y="305.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">WebSocket  ·  ASGI, Channels</text>
+<text x="814.0" y="324.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">ws/tables · ws/kds · ws/notifications</text>
+<text x="814.0" y="338.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">JWT in the query string, checked on connect</text>
+<text x="814.0" y="352.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">events are signals: clients re-fetch over REST</text>
+<rect x="44.0" y="410.0" width="1192.0" height="222.0" rx="4" fill="#4fb22e" opacity="0.05"/>
+<rect x="44.0" y="410.0" width="1192.0" height="222.0" rx="4" fill="none" stroke="#f6f8f7" stroke-width="1" stroke-dasharray="3 5" opacity="0.5"/>
+<text x="60.0" y="434.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="11" fill="#f6f8f7" font-weight="600" letter-spacing="1.2">TENANT BOUNDARY</text>
+<text x="206.0" y="434.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">every row belongs to a tenant; permissions and queryset scoping are enforced server-side, not in the UI</text>
+<path d="M410.0 372 V410" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)"/>
+<path d="M1020.0 410 V372" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)" stroke-dasharray="5 4"/>
+<text x="1010.0" y="398.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10" fill="#9db9b6" font-weight="400" text-anchor="end" stroke="#1c3a28" stroke-width="4" stroke-linejoin="round" paint-order="stroke">broadcast after commit</text>
+<rect x="60.0" y="454.0" width="216.0" height="158.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="74.0" y="479.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Floor and orders</text>
+<text x="74.0" y="499.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">tables · orders</text>
+<text x="74.0" y="513.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">reservations · rooms</text>
+<text x="74.0" y="535.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Table state machine, kitchen</text>
+<text x="74.0" y="549.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">sends, bookings, folios for the</text>
+<text x="74.0" y="563.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">lodge add-on.</text>
+<rect x="296.0" y="454.0" width="216.0" height="158.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="310.0" y="479.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Billing and money</text>
+<text x="310.0" y="499.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">billing · ledger</text>
+<text x="310.0" y="513.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">expenses · payroll</text>
+<text x="310.0" y="535.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Sequential bill numbers, VAT</text>
+<text x="310.0" y="549.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">and PAN, print payloads;</text>
+<text x="310.0" y="563.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">expense review; pay runs.</text>
+<rect x="532.0" y="454.0" width="216.0" height="158.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="546.0" y="479.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Menu and stock</text>
+<text x="546.0" y="499.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">menu · inventory</text>
+<text x="546.0" y="521.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Categories, variants, combos</text>
+<text x="546.0" y="535.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">and specials; stock</text>
+<text x="546.0" y="549.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">adjustments.</text>
+<rect x="768.0" y="454.0" width="216.0" height="158.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="782.0" y="479.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Insight</text>
+<text x="782.0" y="499.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">reports · reviews</text>
+<text x="782.0" y="513.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">activity_logs · chatbot</text>
+<text x="782.0" y="535.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Reports and CSV export, review</text>
+<text x="782.0" y="549.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">funnel, audit log, LangGraph</text>
+<text x="782.0" y="563.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">assistant on premium plans.</text>
+<rect x="1004.0" y="454.0" width="216.0" height="158.0" rx="3" fill="#0f2218" stroke="#dce7e4" stroke-width="1"/>
+<text x="1018.0" y="479.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Platform</text>
+<text x="1018.0" y="499.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">core · auth_users</text>
+<text x="1018.0" y="513.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#f6f8f7" font-weight="400">notifications · websockets</text>
+<text x="1018.0" y="535.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">Tenants, plans, settings,</text>
+<text x="1018.0" y="549.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">roles; WebSocket broadcast</text>
+<text x="1018.0" y="563.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">helpers.</text>
+<path d="M300 632 V672" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)"/>
+<path d="M940 632 V672" fill="none" stroke="#f6f8f7" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#rms-arch-arrow)"/>
+<rect x="60.0" y="672.0" width="480.0" height="66.0" rx="3" fill="#0f2218" stroke="#6e9a9a" stroke-width="1.0"/>
+<text x="74.0" y="697.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">PostgreSQL 16</text>
+<text x="74.0" y="716.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">system of record for every tenant</text>
+<rect x="700.0" y="672.0" width="540.0" height="66.0" rx="3" fill="#0f2218" stroke="#6e9a9a" stroke-width="1.0"/>
+<text x="714.0" y="697.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="14" fill="#f6f8f7" font-weight="600">Redis 7</text>
+<text x="714.0" y="716.0" font-family="&#x27;Inter Variable&#x27;, system-ui, sans-serif" font-size="11" fill="#dce7e4" font-weight="400" opacity="0.88">response cache and the Channels layer behind the WebSockets</text>
+<text x="60.0" y="768.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400">Delivery  ·  Docker Compose: db, redis, backend, frontend (dev and prod overlays)  ·  GitHub Actions CI: ruff, black, pytest, ESLint, tsc, unit tests</text>
+<text x="60.0" y="798.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400" opacity="0.95">Team project built at Technest Innovation; Sudeep works on it as an intern (since August) and it is in production. Drawn from the repository&#x27;s own docs, settings,</text>
+<text x="60.0" y="814.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400" opacity="0.95">routing and Compose files.</text>
+<text x="60.0" y="830.0" font-family="&#x27;JetBrains Mono&#x27;, ui-monospace, Consolas, monospace" font-size="10.5" fill="#9db9b6" font-weight="400" opacity="0.95">Structure only: no tenant data, credentials, customer information, media or source code is shown.</text>
+</svg>
