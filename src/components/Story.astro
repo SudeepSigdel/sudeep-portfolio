@@ -1,0 +1,483 @@
+---
+// The story overlay: a full-screen dialog over the meadow. The meadow itself tilts up into a starfield (src/scripts/meadow);
+// this component is the crawl, the title card, the closing card and the controls. All text comes from src/data/story.ts.
+import { story, storyWordCount, visibleChapters } from '../data/story';
+
+const chapters = visibleChapters();
+const config = { timing: story.timing, audio: story.audio, words: storyWordCount() };
+---
+
+<div
+  class="story"
+  data-story
+  data-config={JSON.stringify(config)}
+  role="dialog"
+  aria-modal="true"
+  aria-label={`${story.title}: a personal story by ${story.byline}`}
+  hidden
+>
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <div class="title" data-title aria-hidden="true">
+    <p class="mono kicker">{story.kicker}</p>
+    <p class="serif name">{story.title}</p>
+    {story.subtitle && <p class="serif sub">{story.subtitle}</p>}
+    <p class="mono kicker">{story.byline}</p>
+  </div>
+
+  <div class="stage" data-stage tabindex="-1">
+    <div class="plane">
+      <div class="scroller" data-scroller>
+        <div class="gap" data-gap="intro"></div>
+        <article>
+          <section class="chapter opening" aria-label="Opening">
+            {story.intro.map((p) => <p class="para">{p}</p>)}
+          </section>
+          {
+            chapters.map((c) => (
+              <section class="chapter" aria-labelledby={`story-${c.id}`}>
+                <div class="gap" data-gap="chapter" aria-hidden="true" />
+                <p class="mono numeral">Chapter {c.numeral}</p>
+                <h2 id={`story-${c.id}`} class="serif">{c.title}</h2>
+                {c.paragraphs.map((p) => (
+                  <p class="para">{p}</p>
+                ))}
+              </section>
+            ))
+          }
+          <section class="chapter outro" aria-label="Closing">
+            <div class="gap" data-gap="chapter" aria-hidden="true" />
+            {story.outro.map((o) => <p class={`para ${o.emphasis}`}>{o.text}</p>)}
+          </section>
+        </article>
+        <div class="gap" data-gap="outro"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="end" data-end hidden>
+    <p class="serif line">{story.closing.line}</p>
+    <div class="actions">
+      <a class="btn mono primary" href="#work" data-work>{story.closing.workLabel} <span aria-hidden="true">↓</span></a>
+      <button class="btn mono" type="button" data-back>↑ Back to the story</button>
+      <button class="btn mono" type="button" data-return>{story.closing.returnLabel}</button>
+    </div>
+    {story.audio.credit && <p class="mono credit">{story.audio.credit}</p>}
+  </div>
+
+  <div class="bar">
+    <button class="btn mono" type="button" data-exit><span aria-hidden="true">←</span> Exit</button>
+    <div class="group">
+      <button class="btn mono" type="button" data-pause aria-pressed="true">Autoplay: on</button>
+      <button class="btn mono" type="button" data-skip>Skip story</button>
+      <button class="btn mono" type="button" data-sound>Sound: off</button>
+    </div>
+  </div>
+
+  <div class="progress" aria-hidden="true"><span data-progress></span></div>
+  <p class="sr" role="status" aria-live="polite" data-status></p>
+</div>
+
+<style>
+  .story {
+    --gold: #f2c94c;
+    --gold-soft: #e7bd45;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    color: var(--gold);
+    --tilt: 27deg;
+    --persp: 620px;
+    --origin-y: 30%;
+    --size: clamp(1.1rem, 0.62rem + 2.2vw, 1.95rem);
+    --measure: min(22em, 90vw);
+    opacity: 0;
+    transition: opacity 0.9s var(--ease);
+  }
+  .story[hidden] {
+    display: none;
+  }
+  .story.is-open {
+    opacity: 1;
+  }
+  .story.is-closing {
+    opacity: 0;
+    transition-duration: 0.8s;
+  }
+
+  /* only visible when the WebGL meadow is not available to be the sky */
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, #0b1226 0%, #03050d 70%);
+    opacity: 0;
+    transition: opacity 1.6s var(--ease);
+  }
+  .no-gl .backdrop {
+    opacity: 1;
+  }
+
+  /* ---- title card ---- */
+  .title {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: 1.4rem;
+    text-align: center;
+    padding: 0 var(--gutter);
+    opacity: 0;
+    transition: opacity 1.2s var(--ease);
+    pointer-events: none;
+  }
+  .show-title .title {
+    opacity: 1;
+  }
+  .title .name {
+    margin: 0;
+    font-size: clamp(1.9rem, 5.6vw, 4.4rem);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 300;
+    line-height: 1.1;
+    text-shadow: 0 0 40px rgb(242 201 76 / 0.28);
+  }
+  .title .sub {
+    margin: -0.4rem 0 0;
+    font-size: clamp(1.1rem, 2.6vw, 1.9rem);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold-soft);
+  }
+  .title .kicker {
+    margin: 0;
+    color: var(--gold-soft);
+    letter-spacing: 0.32em;
+    opacity: 0.85;
+  }
+
+  /* ---- the crawl: a tilted plane receding toward a vanishing point above the middle ---- */
+  .stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    perspective: var(--persp);
+    perspective-origin: 50% var(--origin-y);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 3%, rgb(0 0 0 / 0.5) 17%, #000 36%, #000 93%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 3%, rgb(0 0 0 / 0.5) 17%, #000 36%, #000 93%, transparent 100%);
+    opacity: 0;
+    transition: opacity 1.4s var(--ease);
+    outline: none;
+  }
+  .is-crawling .stage {
+    opacity: 1;
+  }
+  .is-ended .stage {
+    opacity: 0;
+    transition-duration: 1.6s;
+  }
+  .plane {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: var(--measure);
+    height: 100%;
+    margin-left: calc(var(--measure) / -2);
+    transform-origin: 50% 100%;
+    transform: rotateX(var(--tilt));
+    font-size: var(--size);
+  }
+  .scroller {
+    position: absolute;
+    inset: 0 0 auto 0;
+    will-change: transform;
+    font-family: var(--serif);
+    font-weight: 400;
+    line-height: 1.6;
+    text-shadow: 0 0 0.7em rgb(242 201 76 / 0.22);
+  }
+  .chapter {
+    text-align: center;
+  }
+  .numeral {
+    margin: 0 0 0.7em;
+    font-size: 0.5em;
+    letter-spacing: 0.34em;
+    color: var(--gold-soft);
+    opacity: 0.85;
+  }
+  h2 {
+    margin: 0 0 1.1em;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 1.7em;
+    line-height: 1.15;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .para {
+    margin: 0 0 1.15em;
+    text-align: left;
+    text-wrap: pretty;
+    hyphens: manual;
+  }
+  .para.strong {
+    font-weight: 600;
+    text-align: center;
+    margin-top: 2em;
+  }
+  .para.em {
+    font-style: italic;
+    color: var(--gold-soft);
+  }
+  .gap {
+    height: 0;
+  }
+
+  /* ---- closing card ---- */
+  .end {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 2.2rem;
+    padding: 0 var(--gutter);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1.6s var(--ease) 0.5s;
+  }
+  .end[hidden] {
+    display: none;
+  }
+  .end.show {
+    opacity: 1;
+  }
+  .line {
+    margin: 0;
+    font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 36px rgb(242 201 76 / 0.28);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+  .credit {
+    margin: 0;
+    max-width: 44ch;
+    color: var(--gold-soft);
+    opacity: 0.75;
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- controls ---- */
+  .bar {
+    position: absolute;
+    inset: 0 0 auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: clamp(0.75rem, 2vw, 1.5rem) var(--gutter);
+    opacity: 0;
+    transition: opacity 1.2s var(--ease) 0.6s;
+  }
+  .is-open .bar {
+    opacity: 1;
+  }
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    color: #f6e4a8;
+    background: rgb(4 7 16 / 0.55);
+    border: 1px solid rgb(242 201 76 / 0.42);
+    font-family: var(--mono);
+    cursor: pointer;
+    text-decoration: none;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition:
+      background-color 0.3s var(--ease),
+      border-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+  .btn:hover:not(:disabled) {
+    background: rgb(242 201 76 / 0.16);
+    border-color: var(--gold);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .btn.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1a1405;
+  }
+  .btn.primary:hover {
+    background: #ffe08a;
+  }
+  /* Pause and Skip only make sense while the crawl is moving */
+  [data-pause],
+  [data-skip] {
+    display: none;
+  }
+  .is-crawling [data-pause],
+  .is-crawling [data-skip],
+  .show-title [data-skip] {
+    display: inline-flex;
+  }
+
+  .progress {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2px;
+    background: rgb(242 201 76 / 0.12);
+    opacity: 0;
+    transition: opacity 1.2s var(--ease);
+  }
+  .is-crawling .progress,
+  .is-reduced.is-open .progress {
+    opacity: 1;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    background: var(--gold);
+    opacity: 0.75;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- small screens: a gentler tilt and a closer camera keep the lines readable ---- */
+  @media (max-width: 700px) {
+    .story {
+      --tilt: 20deg;
+      --persp: 480px;
+      --origin-y: 34%;
+      --size: clamp(1.02rem, 0.55rem + 3.7vw, 1.4rem);
+      --measure: 90vw;
+    }
+    .btn {
+      padding: 0 0.8rem;
+      font-size: 0.7rem;
+    }
+    .bar {
+      flex-wrap: wrap;
+    }
+    .group {
+      flex: 1 1 auto;
+    }
+  }
+
+  /* ---- reduced motion: the same words, held still. A normal scrolling page of golden text over the stars. ---- */
+  .is-reduced {
+    transition-duration: 0.01s;
+  }
+  .is-reduced .backdrop {
+    opacity: 1;
+    background: rgb(2 4 10 / 0.55);
+    transition: none;
+  }
+  .is-reduced.no-gl .backdrop {
+    background: radial-gradient(ellipse at 50% 30%, #0b1226 0%, #03050d 70%);
+  }
+  .is-reduced .stage {
+    perspective: none;
+    overflow: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 1;
+    padding-top: 5.5rem;
+    transition: none;
+  }
+  .is-reduced .stage:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: -4px;
+  }
+  .is-reduced .plane {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    height: auto;
+    margin: 0 auto;
+    transform: none;
+  }
+  .is-reduced .scroller {
+    position: relative;
+    inset: auto;
+    transform: none !important;
+    padding-bottom: 6rem;
+  }
+  .is-reduced .gap {
+    height: 3rem !important;
+  }
+  .is-reduced [data-pause],
+  .is-reduced [data-skip] {
+    display: none;
+  }
+  .is-reduced .bar {
+    transition: none;
+    opacity: 1;
+  }
+  .is-reduced .title {
+    display: none;
+  }
+  @media (max-width: 700px) {
+    .is-reduced .stage {
+      padding-top: 9rem;
+    }
+  }
+</style>
+
+<style is:global>
+  /* the page steps aside for the story and returns when it ends */
+  html.story-lock {
+    overflow: hidden;
+  }
+  html.story-anim :is(.hero, main, footer, .nav) {
+    transition: opacity 1s var(--ease);
+  }
+  html.story-open :is(.hero, main, footer, .nav) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* the cue and any "read my story" button */
+  @media (prefers-reduced-motion: reduce) {
+    html.story-anim :is(.hero, main, footer, .nav) {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { initStory } from '../scripts/story';
+  const root = document.querySelector<HTMLElement>('[data-story]');
+  if (root) initStory(root);
+</script>

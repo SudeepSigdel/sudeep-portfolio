@@ -1,0 +1,297 @@
+---
+// Three quiet things that go with you down the page:
+//   1. the light of one long day: morning gold at the top, a pale midday, amber and then deep dusk by the end
+//   2. a vine that grows along the right edge as you scroll, and flowers at the very bottom
+//   3. a breeze: the little drawings and sprigs sway, and lean into a gust when you scroll fast
+// It never takes a click, it fades out under the story overlay, and the breeze stops when reduced motion is on.
+---
+
+<div class="daylight" data-daylight aria-hidden="true"></div>
+<div class="vine" data-vine aria-hidden="true"></div>
+
+<style>
+  .daylight {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 75% 60% at var(--sx, 16%) var(--sy, 6%), rgb(var(--sun, 255 210 120) / var(--sa, 0.2)), transparent 72%),
+      linear-gradient(rgb(var(--tint, 255 196 110) / var(--ta, 0.05)), rgb(var(--tint, 255 196 110) / var(--ta, 0.05)));
+    transition: opacity 0.8s var(--ease);
+  }
+  .vine {
+    position: fixed;
+    top: 4.6rem;
+    bottom: 1.5rem;
+    right: clamp(2px, 0.8vw, 14px);
+    width: 36px;
+    z-index: 5;
+    pointer-events: none;
+    transition: opacity 0.8s var(--ease);
+  }
+  :global(html.story-open) .daylight,
+  :global(html.story-open) .vine {
+    opacity: 0;
+  }
+  @media (max-width: 560px) {
+    .vine {
+      display: none;
+    }
+  }
+</style>
+
+<style is:global>
+  .vine svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .vine .stem {
+    fill: none;
+    stroke: color-mix(in srgb, var(--olive) 62%, var(--straw));
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
+  .vine .leaf {
+    fill: color-mix(in srgb, var(--olive) 55%, var(--straw));
+    fill-opacity: 0.8;
+    stroke: color-mix(in srgb, var(--olive) 70%, var(--umber));
+    stroke-width: 0.8;
+    transform: scale(0);
+    transition: transform 0.9s var(--ease);
+  }
+  .vine .leaf.on {
+    transform: scale(1);
+  }
+  .vine .tip {
+    fill: var(--straw);
+    filter: drop-shadow(0 0 4px rgb(212 165 58 / 0.9));
+  }
+  .vine .petal {
+    fill: color-mix(in srgb, var(--straw) 85%, white);
+    stroke: var(--ochre);
+    stroke-width: 0.8;
+    transform: scale(0);
+    transition: transform 1.1s var(--ease);
+  }
+  .vine .bloom.on .petal {
+    transform: scale(1);
+  }
+  .vine .heart {
+    fill: var(--ochre);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vine .leaf,
+    .vine .petal {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const html = document.documentElement;
+  const clamp = (x: number, a: number, b: number) => Math.min(Math.max(x, a), b);
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+  // ---------------------------------------------------------------- 1. the light of one day
+  type Stop = { p: number; sun: [number, number, number]; sa: number; sx: number; sy: number; tint: [number, number, number]; ta: number };
+  const DAY: Stop[] = [
+    { p: 0, sun: [255, 210, 120], sa: 0.2, sx: 16, sy: 6, tint: [255, 196, 110], ta: 0.05 },
+    { p: 0.3, sun: [255, 236, 190], sa: 0.14, sx: 50, sy: 0, tint: [255, 240, 210], ta: 0.02 },
+    { p: 0.62, sun: [255, 190, 100], sa: 0.16, sx: 84, sy: 10, tint: [255, 170, 80], ta: 0.06 },
+    { p: 0.85, sun: [255, 140, 60], sa: 0.24, sx: 92, sy: 26, tint: [200, 90, 40], ta: 0.1 },
+    { p: 1, sun: [255, 110, 50], sa: 0.28, sx: 96, sy: 44, tint: [120, 50, 30], ta: 0.14 },
+  ];
+  const NIGHT: Stop[] = [
+    { p: 0, sun: [190, 215, 255], sa: 0.12, sx: 80, sy: 6, tint: [40, 60, 110], ta: 0.06 },
+    { p: 0.5, sun: [190, 215, 255], sa: 0.1, sx: 50, sy: 0, tint: [30, 50, 100], ta: 0.05 },
+    { p: 1, sun: [190, 215, 255], sa: 0.12, sx: 20, sy: 12, tint: [30, 40, 90], ta: 0.08 },
+  ];
+  function sample(stops: Stop[], p: number) {
+    let i = 0;
+    while (i < stops.length - 2 && p > stops[i + 1].p) i++;
+    const a = stops[i];
+    const b = stops[i + 1];
+    const k = clamp((p - a.p) / (b.p - a.p), 0, 1);
+    const mix = (x: [number, number, number], y: [number, number, number]) => x.map((v, n) => Math.round(lerp(v, y[n], k))).join(' ');
+    return { sun: mix(a.sun, b.sun), sa: lerp(a.sa, b.sa, k), sx: lerp(a.sx, b.sx, k), sy: lerp(a.sy, b.sy, k), tint: mix(a.tint, b.tint), ta: lerp(a.ta, b.ta, k) };
+  }
+
+  // ---------------------------------------------------------------- 2. the vine
+  const NS = 'http://www.w3.org/2000/svg';
+  const vineBox = document.querySelector<HTMLElement>('[data-vine]');
+  let vsvg: SVGSVGElement | null = null;
+  let stem: SVGPathElement | null = null;
+  let len = 0;
+  let leaves: { el: SVGPathElement; at: number }[] = [];
+  let tip: SVGCircleElement | null = null;
+  let bloom: SVGGElement | null = null;
+  let H = 0;
+
+  function buildVine() {
+    if (!vineBox) return;
+    H = vineBox.clientHeight;
+    if (H < 80) return;
+    vineBox.replaceChildren();
+    vsvg = document.createElementNS(NS, 'svg');
+    vsvg.setAttribute('viewBox', `0 0 36 ${H}`);
+    const pts: string[] = [];
+    for (let y = 0; y <= H; y += 5) {
+      const x = 18 + Math.sin(y / 58) * 6 + Math.sin(y / 23 + 1) * 1.6;
+      pts.push(`${y ? 'L' : 'M'}${x.toFixed(1)} ${y}`);
+    }
+    stem = document.createElementNS(NS, 'path');
+    stem.setAttribute('class', 'stem');
+    stem.setAttribute('d', pts.join(' '));
+    vsvg.append(stem);
+    len = stem.getTotalLength();
+    stem.style.strokeDasharray = `${len}`;
+
+    leaves = [];
+    const step = 74;
+    for (let i = 1; i * step < H - 30; i++) {
+      const at = (i * step) / H;
+      const pt = stem.getPointAtLength(at * len);
+      const side = i % 2 ? 1 : -1;
+      const leaf = document.createElementNS(NS, 'path');
+      leaf.setAttribute('class', 'leaf');
+      leaf.setAttribute('d', 'M0 0C5-5 14-5 19 1C14 8 5 7 0 0Z');
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)}) scale(${side} 1) rotate(${-24 + (i % 3) * 8})`);
+      g.append(leaf);
+      vsvg.append(g);
+      leaves.push({ el: leaf, at });
+    }
+
+    tip = document.createElementNS(NS, 'circle');
+    tip.setAttribute('class', 'tip');
+    tip.setAttribute('r', '3.2');
+    vsvg.append(tip);
+
+    bloom = document.createElementNS(NS, 'g');
+    bloom.setAttribute('class', 'bloom');
+    for (let i = 0; i < 7; i++) {
+      const spin = document.createElementNS(NS, 'g');
+      spin.setAttribute('transform', `rotate(${(360 / 7) * i})`);
+      const petal = document.createElementNS(NS, 'ellipse');
+      petal.setAttribute('class', 'petal');
+      petal.setAttribute('cx', '0');
+      petal.setAttribute('cy', '-8');
+      petal.setAttribute('rx', '3.6');
+      petal.setAttribute('ry', '7');
+      petal.style.transformOrigin = '0 0';
+      petal.style.transitionDelay = `${i * 70}ms`;
+      spin.append(petal);
+      bloom.append(spin);
+    }
+    const heart = document.createElementNS(NS, 'circle');
+    heart.setAttribute('class', 'heart');
+    heart.setAttribute('r', '3.4');
+    bloom.append(heart);
+    vsvg.append(bloom);
+    vineBox.append(vsvg);
+  }
+
+  function paintVine(p: number) {
+    if (!stem || !tip || !bloom) return;
+    stem.style.strokeDashoffset = `${len * (1 - p)}`;
+    const pt = stem.getPointAtLength(len * p);
+    tip.setAttribute('cx', pt.x.toFixed(1));
+    tip.setAttribute('cy', pt.y.toFixed(1));
+    const open = p > 0.985;
+    tip.style.opacity = open ? '0' : p < 0.01 ? '0' : '1';
+    bloom.setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+    bloom.classList.toggle('on', open);
+    for (const l of leaves) l.el.classList.toggle('on', p >= l.at);
+  }
+
+  // ---------------------------------------------------------------- 3. the breeze
+  type Sway = { el: HTMLElement | SVGElement; deg: number; ph: number };
+  let swayers: Sway[] = [];
+  function collectSway() {
+    const groups: [string, number, string][] = [
+      ['.motif', 2.2, '50% 100%'],
+      ['.eyebrow svg', 7, '50% 100%'],
+      ['.notes .mark svg', 4, '50% 100%'],
+      ['.asides svg', 4, '50% 100%'],
+      ['.ic', 6, '50% 100%'],
+      ['h2.serif', 0.22, '0 100%'],
+    ];
+    swayers = [];
+    let n = 0;
+    for (const [sel, deg, origin] of groups) {
+      document.querySelectorAll<HTMLElement | SVGElement>(sel).forEach((el) => {
+        (el as HTMLElement).style.transformOrigin = origin;
+        swayers.push({ el, deg, ph: n++ * 1.37 });
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------- the loop
+  const light = document.querySelector<HTMLElement>('[data-daylight]');
+  let shownP = -1;
+  let lastY = window.scrollY;
+  let gust = 0;
+  let raf = 0;
+  let last = 0;
+  let t = 0;
+
+  function frame(now: number) {
+    raf = requestAnimationFrame(frame);
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    t += dt;
+    const max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const target = clamp(window.scrollY / max, 0, 1);
+    const dy = window.scrollY - lastY;
+    lastY = window.scrollY;
+    gust += (clamp(dy / Math.max(dt, 1e-3) / 1400, -1.2, 1.2) - gust) * Math.min(dt * 4, 1);
+
+    // smooth the day and the vine toward where you are
+    shownP = shownP < 0 ? target : shownP + (target - shownP) * Math.min(dt * (reduce.matches ? 60 : 5), 1);
+    if (light) {
+      const s = sample(html.dataset.theme === 'night' ? NIGHT : DAY, shownP);
+      light.style.setProperty('--sun', s.sun);
+      light.style.setProperty('--sa', s.sa.toFixed(3));
+      light.style.setProperty('--sx', `${s.sx.toFixed(1)}%`);
+      light.style.setProperty('--sy', `${s.sy.toFixed(1)}%`);
+      light.style.setProperty('--tint', s.tint);
+      light.style.setProperty('--ta', s.ta.toFixed(3));
+    }
+    paintVine(shownP);
+
+    if (!reduce.matches) {
+      for (const s of swayers) {
+        const breeze = Math.sin(t * 0.55 + s.ph) * 0.55 + Math.sin(t * 0.21 + s.ph * 1.7) * 0.35 + 0.25;
+        (s.el as HTMLElement).style.rotate = `${((breeze + gust * 1.3) * s.deg).toFixed(2)}deg`;
+      }
+    }
+  }
+
+  function start() {
+    buildVine();
+    collectSway();
+    last = performance.now();
+    if (!raf) raf = requestAnimationFrame(frame);
+  }
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(buildVine, 150);
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    } else if (!raf) {
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+  });
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
+</script>

@@ -11,27 +11,37 @@ Source of direction: two reference landscapes.
 
 Never invent personal details, biography, projects, metrics, quotes, or testimonials. Use clearly marked placeholders (`[Project title]`, `[One-sentence summary]`) for anything the owner has not supplied.
 
-## Locked direction: "Meadow to Ridge" (approved; overrides general guidance below where they differ)
+## Locked direction: "Golden Meadow" (current; supersedes the earlier "Meadow to Ridge" blue-sky/dark-green direction)
 
-The page moves from open field to treeline to ridge. Each section has one fixed mood:
+The page is one continuous place: a live, procedural golden-green meadow at golden hour (inspired by Ghost of Tsushima), seen from low in the grass. A single fixed WebGL canvas (`src/components/Meadow.astro`, engine in `src/scripts/meadow/`) sits behind the page. Hero and Contact are transparent and show it; every other section is opaque and slides over it like a curtain.
 
 | Section | Mood | Surface |
 |---|---|---|
-| Hero | Bright, cinematic: a vivid green hillside under open sky, vivid green allowed here. Type is dark `--pine` on the pale sky (no heavy veil, so the photo stays bright) | Image, only a soft top lift for the nav |
-| Transition | Deliberate gradient strip from the hero's bottom edge into `--forest` (never a hard cut, never a decorative band) | Gradient to `--forest` |
-| About | Dark, atmospheric | `--forest` |
-| Work | Light, editorial, optimised for reading | `--cloud` / `--ink` |
-| Stack | Dark, atmospheric | `--forest` |
-| Closing / Contact | Dark: the misty green slope with small hikers is the closing visual; copy sits top-left over a `--pine` veil, hikers stay clear | Image + `--pine` veil |
+| Hero | Warm late-morning light, backlit grass, hazy ridges. Type is dark `--ink` on the pale warm sky; the lower edge gets a soft `--umber` shade so the caption reads over grass | Live meadow (day light) |
+| About | Dark, quiet | `--loam` |
+| Experience | Light, reading | `--sand` |
+| Work | Light, editorial, optimised for reading | `--parchment` / `--ink` |
+| Stack | Dark, quiet | `--loam` |
+| Contact | Dusk: the same meadow, camera lower, sun near the ridge, copy top-left over an `--umber` veil | Live meadow (dusk light) |
 
 Rules:
-- Bright only in the hero. Do not add vivid green or sky blue to dark or Work sections beyond the single accent rule.
-- Navigation is section-aware: a fixed slim bar, transparent over the hero, solid `--pine` after it. It shows the current section as `NN / Name` and marks the active link with `aria-current`. On mobile the links collapse into a menu button (`aria-expanded`) that closes on link click and Escape; the current section label stays visible.
-- Photos are high-resolution (2600 px wide or more), Unsplash-licensed, and credited in the footer and in `src/assets/landscapes/CREDITS.md`. Do not reintroduce low-resolution or watermarked reference images.
-- The transparent nav uses dark type over the bright hero and flips to light type on the solid bar and the open menu.
-- Project visuals must be real: screenshots, diagrams or research figures the owner supplies. Never invent mockups, charts, metrics or achievements. Projects without a supplied visual stay text-only; no placeholder art. Generated figures live in `src/assets/projects/<project>/` and are produced by `scripts/assets/` from the real repositories and run records; they are inlined in the Work section (first figure open, others collapsed) and scroll sideways inside their frame on narrow screens. Every figure states its split, sample size, uncertainty and limitations on the figure itself; negative results stay in.
-- Parallax: hero only, desktop only (wide viewport, fine pointer), disabled for `prefers-reduced-motion: reduce`. Everything else is fade-and-rise reveal.
-- Stack stays fixed: Astro, plain CSS tokens, Fraunces / Inter / JetBrains Mono. No new dependencies for visual effects.
+- Palette is earthy: `--parchment #f1e9d6`, `--sand #e4d8b9`, `--straw #d4a53a` (accent on dark only), `--ochre #8a5d14` (accent on light), `--olive`, `--loam #2a2616`, `--umber #1a170d`, `--dust #c4b995` (muted text on dark), `--ink`, `--ink-soft`. No blue/teal UI colour; the only blue is the sky inside the scene.
+- The grass is the primary effect and must stay real: instanced blades with a custom GLSL vertex shader (wind field, bend by height squared, per-blade variation, cursor push). Never replace it with an image or video; the CSS fallback in `Meadow.astro` is only for devices without WebGL2.
+- three.js is the one permitted visual dependency (vanilla, no React: Astro has no React runtime and one canvas does not justify adding it). It loads lazily on idle; the headline and all content are plain HTML and paint first.
+- Performance contract: three density tiers (3 draw calls), adaptive quality (lower DPR and blade count if frames run slow), reduced density on mobile/low-power, single still frame under `prefers-reduced-motion`, rendering paused when the hero/contact are off-screen or the tab is hidden.
+- Motion beyond the meadow: fade-and-rise reveals only. Cursor push on grass is gentle and fine-pointer only; no other cursor effects.
+- Navigation is section-aware: a fixed slim bar, transparent over the hero (dark type), solid `--umber` after it, current section shown as `NN / Name`, `aria-current` on the active link, mobile menu button with `aria-expanded` that closes on link click and Escape.
+- Project visuals: each project gets a nature drawing (`Motif.astro`, decorative only) and "field notes" (`FieldNotes.astro`, content in `src/data/trails.ts`): a trail of five stops or fewer in plain language, plus an optional "numbers" panel of stems. Facts must be re-checked against the project's own repo before they change, and each trail names the commit it was checked against. Never invent mockups, charts, metrics or achievements; negative results stay in. The old generated dark SVG plates (`scripts/assets/`) are retired.
+- Experience and education content comes only from facts already on the site. Do not invent roles, dates or metrics.
+- Stack: Astro, plain CSS tokens, Fraunces / Inter / JetBrains Mono, plus three.js for the meadow.
+
+Night mode (`data-theme="night"` on `<html>`):
+- The nav toggle flips it; the choice is saved in `localStorage` (`theme`), and with nothing saved it follows `prefers-color-scheme`. An inline script in `Base.astro` sets it before first paint, so there is no flash.
+- The scene crossfades (`uNight` in `src/scripts/meadow/`): a deep navy sky, stars, a mottled moon, a dim cool light, and grass desaturated to silver blue-green. Day, dusk and night all blend, so Contact at night is the same meadow with a lower moon.
+- Page tokens flip in `global.css` (`:root[data-theme='night']`): `--ink` becomes light, `--paper`/`--paper-2` become dark, `--loam`/`--umber` turn cool. Use `--paper`, `--ink` and `--focus` for anything that must theme; a hard-coded colour will not follow. Do not use `--parchment` as a light surface: it is text colour on dark.
+- Any new sky or ground colour needs a night value in the `NIGHT` preset or the shader's `uNight` blend.
+
+The sections below are the general art-direction principles. Where they mention the old palette (cloud/forest/pine/meadow tokens), blue sky or "bright only in the hero", the Golden Meadow rules above win.
 
 ## 1. Principles and emotional intent
 

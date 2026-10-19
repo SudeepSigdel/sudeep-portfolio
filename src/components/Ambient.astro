@@ -1,0 +1,361 @@
+---
+// Life in the air: pollen and dandelion seeds drift past at different depths and are swept by your scrolling, a leaf
+// tumbles across now and then, and a butterfly (a pale moth at night) keeps loosely to your cursor. Purely atmospheric:
+// it never blocks a click, it rests under the story overlay, and it is absent when reduced motion is on.
+---
+
+<canvas class="ambient" data-ambient aria-hidden="true"></canvas>
+
+<style>
+  .ambient {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease);
+  }
+  :global(html.ambient-on) .ambient {
+    opacity: 1;
+  }
+  :global(html.story-open) .ambient {
+    opacity: 0;
+    transition-duration: 0.6s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-ambient]');
+  const ctx = canvas?.getContext('2d');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (canvas && ctx && !reduce.matches) start(canvas, ctx);
+
+  function start(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+    const html = document.documentElement;
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+    const clamp = (x: number, a: number, b: number) => Math.min(Math.max(x, a), b);
+    const fine = window.matchMedia('(pointer: fine)');
+    const small = window.innerWidth < 700 || (navigator.hardwareConcurrency ?? 8) <= 4;
+    const COUNT = small ? 14 : 26;
+
+    let w = 0;
+    let h = 0;
+    let raf = 0;
+    let last = 0;
+    let t = 0;
+    let lastScroll = window.scrollY;
+    let windScroll = 0;
+    let lightUnder = false;
+
+    // ---- pointer ----
+    const ptr = { x: 0, y: 0, at: -1e9 };
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        if (e.pointerType === 'touch') return;
+        ptr.x = e.clientX;
+        ptr.y = e.clientY;
+        ptr.at = performance.now();
+      },
+      { passive: true },
+    );
+
+    // ---- which kind of surface is under the middle of the screen: decides how the pollen is coloured ----
+    const surfaces = document.querySelectorAll<HTMLElement>('header.hero, section, footer');
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) lightUnder = e.target.classList.contains('on-light') || e.target.classList.contains('on-sand');
+        }
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    surfaces.forEach((s) => io.observe(s));
+
+    const palette = () => {
+      const night = html.dataset.theme === 'night';
+      const onLight = lightUnder && !night;
+      return {
+        night,
+        mote: night ? '205,225,255' : onLight ? '150,98,20' : '255,226,140',
+        glow: night ? 0.5 : onLight ? 0.22 : 0.5,
+      };
+    };
+
+    // ---- pollen and seeds ----
+    type Mote = { x: number; y: number; z: number; r: number; ph: number; spin: number; seed: boolean };
+    let motes: Mote[] = [];
+    const makeMote = (anywhere: boolean): Mote => ({
+      x: rnd(0, w),
+      y: anywhere ? rnd(0, h) : h + rnd(8, 60),
+      z: rnd(0.35, 1),
+      r: rnd(1.1, 2.6),
+      ph: rnd(0, 6.28),
+      spin: rnd(-0.6, 0.6),
+      seed: Math.random() < 0.28,
+    });
+
+    // ---- a leaf ----
+    let leaf: null | { x: number; y: number; vx: number; vy: number; ph: number; rot: number; rgb: string; s: number } = null;
+    let leafIn = rnd(7, 14);
+
+    // ---- the butterfly ----
+    const bf = { x: 0, y: 0, vx: 0, vy: 0, flap: 0, tx: 0, ty: 0, retarget: 0, speed: 0, ang: 0 };
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (!motes.length) {
+        motes = Array.from({ length: COUNT }, () => makeMote(true));
+        bf.x = w * 0.7;
+        bf.y = h * 0.6;
+        bf.tx = bf.x;
+        bf.ty = bf.y;
+      }
+    }
+
+    function step(dt: number) {
+      t += dt;
+      // scrolling is a gust: it parallax-shifts the layers and leans the whole air sideways
+      const sy = window.scrollY;
+      const dy = sy - lastScroll;
+      lastScroll = sy;
+      windScroll += (clamp(dy / Math.max(dt, 1e-3) / 1100, -1.6, 1.6) - windScroll) * Math.min(dt * 5, 1);
+      const breeze = 0.35 + Math.sin(t * 0.17) * 0.25;
+
+      for (const m of motes) {
+        const sway = Math.sin(t * 0.7 + m.ph);
+        m.x += (sway * 7 + (breeze * 26 + windScroll * 120) * m.z) * dt;
+        m.y += (-(m.seed ? 4 : 7) * m.z - Math.abs(windScroll) * 20 * m.z) * dt - dy * 0.3 * m.z;
+        m.ph += dt * 0.2;
+        if (m.y < -14) Object.assign(m, makeMote(false));
+        if (m.y > h + 80) m.y = -10;
+        if (m.x > w + 14) m.x = -10;
+        if (m.x < -14) m.x = w + 10;
+      }
+
+      // leaf
+      leafIn -= dt;
+      if (!leaf && leafIn <= 0) {
+        const fromLeft = Math.random() < 0.5;
+        leaf = {
+          x: fromLeft ? -30 : w + 30,
+          y: rnd(h * 0.05, h * 0.5),
+          vx: (fromLeft ? 1 : -1) * rnd(70, 110),
+          vy: rnd(18, 34),
+          ph: rnd(0, 6),
+          rot: rnd(0, 6),
+          rgb: Math.random() < 0.5 ? '154,168,79' : '212,165,58',
+          s: rnd(0.8, 1.2),
+        };
+      }
+      if (leaf) {
+        leaf.ph += dt * 2.2;
+        leaf.x += (leaf.vx + windScroll * 90 + Math.sin(leaf.ph) * 30) * dt;
+        leaf.y += (leaf.vy + Math.cos(leaf.ph * 0.8) * 22) * dt - dy * 0.5;
+        leaf.rot += dt * (0.9 + Math.sin(leaf.ph) * 0.8);
+        if (leaf.x < -60 || leaf.x > w + 60 || leaf.y > h + 60 || leaf.y < -80) {
+          leaf = null;
+          leafIn = rnd(22, 40);
+        }
+      }
+
+      // butterfly: follows the cursor loosely, otherwise wanders; scrolling drags it along a little
+      const now = performance.now();
+      const following = fine.matches && now - ptr.at < 3500;
+      if (following) {
+        bf.tx = ptr.x + Math.sin(t * 1.3) * 46 + 38;
+        bf.ty = ptr.y + Math.sin(t * 2.1) * 26 - 34;
+      } else {
+        bf.retarget -= dt;
+        if (bf.retarget <= 0) {
+          bf.tx = rnd(w * 0.1, w * 0.9);
+          bf.ty = rnd(h * 0.3, h * 0.88);
+          bf.retarget = rnd(3.5, 7);
+        }
+      }
+      const k = following ? 6.5 : 2.4;
+      const c = following ? 3.2 : 1.9;
+      bf.vx += ((bf.tx - bf.x) * k - bf.vx * c) * dt;
+      bf.vy += ((bf.ty - bf.y) * k - bf.vy * c) * dt + Math.sin(t * 9) * 26 * dt;
+      bf.x += bf.vx * dt;
+      bf.y += bf.vy * dt - dy * 0.12;
+      bf.x = clamp(bf.x, -20, w + 20);
+      bf.y = clamp(bf.y, -20, h + 20);
+      bf.speed = Math.hypot(bf.vx, bf.vy);
+      bf.flap += dt * (7 + clamp(bf.speed / 60, 0, 7));
+      const want = clamp(bf.vx * 0.0022, -0.55, 0.55);
+      bf.ang += (want - bf.ang) * Math.min(dt * 4, 1);
+    }
+
+    function drawMote(m: Mote, p: ReturnType<typeof palette>) {
+      const tw = p.night ? 0.55 + 0.45 * Math.sin(t * 2 + m.ph * 5) : 0.8;
+      const a = (0.25 + 0.55 * m.z) * tw;
+      const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 5);
+      g.addColorStop(0, `rgba(${p.mote},${a * p.glow * 1.4})`);
+      g.addColorStop(1, `rgba(${p.mote},0)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(m.x - m.r * 5, m.y - m.r * 5, m.r * 10, m.r * 10);
+      ctx.fillStyle = `rgba(${p.mote},${a})`;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r * 0.55 * (0.6 + m.z * 0.6), 0, 6.283);
+      ctx.fill();
+      if (m.seed) {
+        // a dandelion seed: a tiny fan of hairs
+        const L = 6 + m.z * 6;
+        const rot = t * m.spin + m.ph;
+        ctx.strokeStyle = `rgba(${p.mote},${a * 0.9})`;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        for (let i = 0; i < 7; i++) {
+          const th = rot - 1.05 + i * 0.35;
+          ctx.moveTo(m.x, m.y);
+          ctx.lineTo(m.x + Math.cos(th - 1.57) * L, m.y + Math.sin(th - 1.57) * L);
+        }
+        ctx.stroke();
+        ctx.fillStyle = `rgba(${p.mote},${a})`;
+        for (let i = 0; i < 7; i++) {
+          const th = rot - 1.05 + i * 0.35;
+          ctx.fillRect(m.x + Math.cos(th - 1.57) * L - 0.5, m.y + Math.sin(th - 1.57) * L - 0.5, 1, 1);
+        }
+      }
+    }
+
+    function drawLeaf(p: ReturnType<typeof palette>) {
+      if (!leaf) return;
+      const flip = Math.cos(leaf.ph * 1.6);
+      ctx.save();
+      ctx.translate(leaf.x, leaf.y);
+      ctx.rotate(leaf.rot);
+      ctx.scale(leaf.s, leaf.s * (0.35 + Math.abs(flip) * 0.65));
+      ctx.fillStyle = `rgba(${leaf.rgb},${p.night ? 0.45 : 0.85})`;
+      ctx.beginPath();
+      ctx.moveTo(-11, 0);
+      ctx.bezierCurveTo(-5, -9, 6, -9, 12, 0);
+      ctx.bezierCurveTo(6, 8, -5, 8, -11, 0);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(40,30,10,0.45)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(-11, 0);
+      ctx.lineTo(12, 0);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawButterfly(p: ReturnType<typeof palette>) {
+      const open = 0.18 + 0.82 * Math.abs(Math.cos(bf.flap));
+      ctx.save();
+      ctx.translate(bf.x, bf.y);
+      ctx.rotate(bf.ang);
+      ctx.scale(1.05, 1.05);
+      if (p.night) {
+        ctx.globalCompositeOperation = 'lighter';
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 26);
+        g.addColorStop(0, 'rgba(200,225,255,0.28)');
+        g.addColorStop(1, 'rgba(200,225,255,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(-26, -26, 52, 52);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      const main = p.night ? 'rgba(214,228,255,0.9)' : 'rgba(224,150,44,0.96)';
+      const edge = p.night ? 'rgba(120,150,200,0.9)' : 'rgba(70,40,10,0.85)';
+      const low = p.night ? 'rgba(180,200,240,0.85)' : 'rgba(184,104,24,0.95)';
+      for (const s of [-1, 1]) {
+        ctx.save();
+        ctx.scale(s * open, 1);
+        // forewing
+        ctx.fillStyle = main;
+        ctx.strokeStyle = edge;
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(1, -1);
+        ctx.bezierCurveTo(6, -17, 20, -17, 16, -5);
+        ctx.bezierCurveTo(14, -1, 8, 1, 1, 1);
+        ctx.fill();
+        ctx.stroke();
+        // hindwing
+        ctx.fillStyle = low;
+        ctx.beginPath();
+        ctx.moveTo(1, 1);
+        ctx.bezierCurveTo(10, 2, 15, 9, 9, 14);
+        ctx.bezierCurveTo(5, 16, 2, 9, 1, 3);
+        ctx.fill();
+        ctx.stroke();
+        // spots
+        ctx.fillStyle = p.night ? 'rgba(90,110,160,0.7)' : 'rgba(60,34,8,0.7)';
+        ctx.beginPath();
+        ctx.arc(11, -8, 1.6, 0, 6.283);
+        ctx.fill();
+        ctx.restore();
+      }
+      // body and feelers
+      ctx.fillStyle = p.night ? 'rgba(90,110,160,0.95)' : 'rgba(46,28,8,0.95)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 1.7, 8, 0, 0, 6.283);
+      ctx.fill();
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(0, -7);
+      ctx.quadraticCurveTo(-3, -12, -6, -13);
+      ctx.moveTo(0, -7);
+      ctx.quadraticCurveTo(3, -12, 6, -13);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      const p = palette();
+      for (const m of motes) drawMote(m, p);
+      drawLeaf(p);
+      drawButterfly(p);
+    }
+
+    function tick(now: number) {
+      raf = requestAnimationFrame(tick);
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      if (html.classList.contains('story-open')) return;
+      step(dt);
+      draw();
+    }
+    function run() {
+      if (raf) return;
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+    function halt() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', () => (document.hidden ? halt() : run()));
+    reduce.addEventListener('change', () => {
+      if (reduce.matches) {
+        halt();
+        ctx.clearRect(0, 0, w, h);
+        html.classList.remove('ambient-on');
+      } else {
+        html.classList.add('ambient-on');
+        run();
+      }
+    });
+    html.classList.add('ambient-on');
+    run();
+  }
+</script>

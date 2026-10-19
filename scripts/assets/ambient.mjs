@@ -44,6 +44,17 @@ const sprites = {
     base: [430, 195, 340, 40],
     halo: 26, core: 9,
   }),
+  'cloud-d': sprite({
+    w: 1500, h: 480,
+    circles: [[240, 330, 120], [420, 270, 165], [650, 225, 200], [880, 255, 175], [1080, 305, 140], [1250, 350, 100]],
+    base: [750, 395, 680, 70],
+  }),
+  'cloud-e': sprite({
+    w: 700, h: 220,
+    circles: [[170, 140, 58], [290, 112, 80], [420, 120, 74], [530, 145, 52]],
+    base: [350, 170, 270, 34],
+    halo: 22, core: 8,
+  }),
   // wide, very soft mist for the closing section
   fog: sprite({
     w: 2200, h: 700,

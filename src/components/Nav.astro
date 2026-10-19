@@ -1,9 +1,10 @@
 ---
 const links = [
   { id: 'about', n: '01', label: 'About' },
-  { id: 'work', n: '02', label: 'Work' },
-  { id: 'stack', n: '03', label: 'Stack' },
-  { id: 'contact', n: '04', label: 'Contact' },
+  { id: 'experience', n: '02', label: 'Experience' },
+  { id: 'work', n: '03', label: 'Work' },
+  { id: 'stack', n: '04', label: 'Stack' },
+  { id: 'contact', n: '05', label: 'Contact' },
 ];
 ---
 
@@ -34,6 +35,15 @@ const links = [
         ))
       }
     </ul>
+
+    <button class="mono theme" type="button" aria-pressed="false" data-theme-toggle>
+      <svg class="icon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path class="moon" d="M12.5 10.2A5.5 5.5 0 0 1 5.8 3.5a5.5 5.5 0 1 0 6.7 6.7Z" />
+        <g class="sun"><circle cx="8" cy="8" r="3" /><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" /></g>
+      </svg>
+      <span class="to-night">Night</span>
+      <span class="to-day">Day</span>
+    </button>
   </div>
 </nav>
 
@@ -42,22 +52,22 @@ const links = [
     position: fixed;
     inset: 0 0 auto 0;
     z-index: 50;
-    color: var(--cloud);
+    color: var(--parchment);
     transition:
       background-color 0.5s var(--ease),
       border-color 0.5s var(--ease);
     border-bottom: 1px solid transparent;
   }
-  /* Over the bright hero the bar uses dark type; it flips to light on the solid bar and the open menu */
+  /* Over the pale sky the bar uses dark type; it flips to light on the solid bar and the open menu */
   .nav:not(.solid):not(.open) {
-    color: var(--pine);
+    color: var(--ink);
   }
   .nav:not(.solid):not(.open) :focus-visible {
-    outline-color: var(--pine);
+    outline-color: var(--ink);
   }
   .nav.solid {
-    background: var(--pine);
-    border-bottom-color: rgb(246 248 247 / 0.14);
+    background: var(--umber);
+    border-bottom-color: rgb(241 233 214 / 0.14);
   }
   .bar {
     display: flex;
@@ -75,7 +85,7 @@ const links = [
   .label {
     opacity: 0;
     transition: opacity 0.5s var(--ease);
-    color: var(--haze-text);
+    color: var(--dust);
     white-space: nowrap;
   }
   .nav.solid .label {
@@ -107,8 +117,52 @@ const links = [
     display: none;
   }
 
+  /* Day / night switch: shown only once its script has attached, since before that it would do nothing */
+  .theme {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem;
+    margin-left: clamp(0.5rem, 2vw, 1.25rem);
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+  .theme[data-ready] {
+    display: inline-flex;
+  }
+  .icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+  }
+  .moon {
+    fill: currentColor;
+  }
+  /* shows the destination (a moon while it is day, a sun while it is night), driven by the theme attribute so it is right from first paint */
+  .sun,
+  .to-day {
+    display: none;
+  }
+  :global(:root[data-theme='night']) .moon,
+  :global(:root[data-theme='night']) .to-night {
+    display: none;
+  }
+  :global(:root[data-theme='night']) .sun {
+    display: inline;
+  }
+  :global(:root[data-theme='night']) .to-day {
+    display: inline;
+  }
+
   /* Small screens: collapse links into a menu once JS is available */
   @media (max-width: 760px) {
+    .theme {
+      margin-left: 0.5rem;
+    }
     :global(.js) .toggle {
       display: inline-flex;
       align-items: center;
@@ -128,8 +182,8 @@ const links = [
       gap: 0;
       margin: 0;
       padding: 0.5rem var(--gutter) 1.25rem;
-      background: var(--pine);
-      border-bottom: 1px solid rgb(246 248 247 / 0.14);
+      background: var(--umber);
+      border-bottom: 1px solid rgb(241 233 214 / 0.14);
     }
     :global(.js) .nav.open .links {
       display: flex;
@@ -143,14 +197,14 @@ const links = [
       background: none;
     }
     :global(.js) .links a[aria-current='true'] {
-      color: var(--meadow);
+      color: var(--straw);
     }
     :global(.js) .n {
       display: inline;
-      color: var(--haze-text);
+      color: var(--dust);
     }
     :global(.js) .nav.open {
-      background: var(--pine);
+      background: var(--umber);
     }
     /* without JS, let the links wrap beneath the mark */
     .bar {
@@ -232,5 +286,35 @@ const links = [
       if (nav.classList.contains('open') && !nav.contains(e.target as Node)) setOpen(false);
     });
     window.matchMedia('(min-width: 761px)').addEventListener('change', (m) => m.matches && setOpen(false));
+  }
+
+  // Day / night
+  const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  if (themeBtn) {
+    const root = document.documentElement;
+    const apply = (night: boolean, save: boolean) => {
+      root.dataset.theme = night ? 'night' : 'day';
+      themeBtn.setAttribute('aria-pressed', String(night));
+      themeBtn.setAttribute('aria-label', night ? 'Night mode, on. Switch to day' : 'Night mode, off. Switch to night');
+      document.querySelector<HTMLMetaElement>('meta[name=theme-color]')?.setAttribute('content', night ? '#0a0d0b' : '#1a170d');
+      if (save) {
+        try {
+          localStorage.setItem('theme', night ? 'night' : 'day');
+        } catch {
+          /* private mode: the choice just lasts for this visit */
+        }
+      }
+    };
+    apply(root.dataset.theme === 'night', false);
+    themeBtn.setAttribute('data-ready', '');
+    themeBtn.addEventListener('click', () => apply(root.dataset.theme !== 'night', true));
+    // follow the system until the visitor makes their own choice
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem('theme');
+      } catch {}
+      if (!saved) apply(e.matches, false);
+    });
   }
 </script>

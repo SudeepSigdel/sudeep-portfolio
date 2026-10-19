@@ -2,17 +2,13 @@
 import { site } from '../data/site';
 ---
 
-<footer class="on-dark">
+<footer class="on-dark edge-grass">
   <div class="wrap row mono muted">
     <span>© {new Date().getFullYear()} {site.name}</span>
-    <span class="credit">
-      Photos:
-      <a href="https://unsplash.com/photos/rolling-green-hills-under-a-bright-blue-sky-q0lB6w0z6Ns" rel="noopener noreferrer">Spencer DeMera</a>,
-      <a href="https://unsplash.com/photos/people-standing-on-green-grass-field-near-green-mountain-covered-with-fog-during-daytime-TLoX_bmGeBE" rel="noopener noreferrer">Taneli Lahtinen</a>
-      on Unsplash
-    </span>
-    <a href="#top">Back to top</a>
+    <span class="credit">Meadow drawn live in the browser with <a href="https://threejs.org" rel="noopener noreferrer">three.js</a></span>
+    <a href="#top">Back to top (the grass is nicer up there)</a>
   </div>
+  <p class="mono muted wrap joke">Built without a single Windows reinstall. This time.</p>
 </footer>
 
 <style>
@@ -31,5 +27,12 @@ import { site } from '../data/site';
   }
   .row {
     flex-wrap: wrap;
+  }
+  .joke {
+    margin: -0.75rem auto 0;
+    padding-bottom: 2rem;
+    text-transform: none;
+    letter-spacing: 0.03em;
+    font-style: italic;
   }
 </style>

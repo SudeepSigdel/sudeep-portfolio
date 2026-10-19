@@ -3,17 +3,20 @@
 @import '@fontsource/jetbrains-mono/400.css';
 
 :root {
-  --sky: #2f7fd0;
-  --cloud: #f6f8f7;
-  --mist: #dce7e4;
-  --meadow: #4fb22e;
-  --grass: #5e8f45;
-  --forest: #1c3a28;
-  --pine: #0f2218;
-  --teal-haze: #6e9a9a;
-  --ink: #14201a;
-  --ink-soft: #4b5f56;
-  --haze-text: #9db9b6;
+  --parchment: #f1e9d6;
+  --sand: #e4d8b9;
+  --straw: #d4a53a;
+  --ochre: #8a5d14;
+  --olive: #6b7a2e;
+  --loam: #2a2616;
+  --umber: #1a170d;
+  --dust: #c4b995;
+  --ink: #231e14;
+  --ink-soft: #5a5036;
+  --paper: #f1e9d6; /* light reading surfaces; they go dark at night */
+  --paper-2: #e4d8b9;
+  --focus: #8a5d14;
+  color-scheme: light;
 
   --serif: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
   --sans: 'Inter Variable', system-ui, sans-serif;
@@ -22,6 +25,20 @@
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --section-y: clamp(6rem, 14vw, 12rem);
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Night: the same page under moonlight. Dark surfaces turn cool, the reading surfaces go dark, and --ink flips to light. */
+:root[data-theme='night'] {
+  --parchment: #e6e8de;
+  --loam: #161b17;
+  --umber: #0a0d0b;
+  --dust: #a9b3a8;
+  --ink: #e6e8de;
+  --ink-soft: #a3aca0;
+  --paper: #10140f;
+  --paper-2: #151a14;
+  --focus: #d4a53a;
+  color-scheme: dark;
 }
 
 *,
@@ -38,7 +55,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--cloud);
+  background: var(--umber);
   color: var(--ink);
   font-family: var(--sans);
   font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
@@ -58,21 +75,21 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--meadow);
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 .on-dark :focus-visible,
-.hero :focus-visible,
+.contact :focus-visible,
 .nav :focus-visible {
-  outline-color: var(--cloud);
+  outline-color: var(--straw);
 }
 
 .skip {
   position: absolute;
   left: var(--gutter);
   top: -4rem;
-  background: var(--pine);
-  color: var(--cloud);
+  background: var(--umber);
+  color: var(--parchment);
   padding: 0.6rem 1rem;
   z-index: 100;
   font-family: var(--mono);
@@ -105,14 +122,19 @@ a {
   padding-block: var(--section-y);
 }
 .on-dark {
-  background: var(--forest);
-  color: var(--cloud);
+  background: var(--loam);
+  color: var(--parchment);
+}
+/* Light reading surface; the page itself sits on the dark body colour so overscroll never flashes white */
+.on-light {
+  background: var(--paper);
+  color: var(--ink);
 }
 .muted {
   color: var(--ink-soft);
 }
 .on-dark .muted {
-  color: var(--haze-text);
+  color: var(--dust);
 }
 
 .rule {
@@ -149,4 +171,119 @@ a {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* Sections stack above the fixed meadow (Meadow.astro). Opaque ones cover it; Hero and Contact let it show. */
+main,
+footer {
+  position: relative;
+  z-index: 1;
+}
+.on-sand {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .on-light,
+  .on-sand,
+  .on-dark {
+    transition:
+      background-color 0.9s var(--ease),
+      color 0.9s var(--ease);
+  }
+}
+
+/* ================= Landscape surfaces (shared by every section after the hero) ================= */
+:root {
+  --mask-grass: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 64' preserveAspectRatio='none'%3E%3Cpath d='M-1.2 64 Q2.0 40.8 2.5 21.9 Q6.1 42.9 8.0 64Z M898.8 64 Q902.0 40.8 902.5 21.9 Q906.1 42.9 908.0 64Z M10.1 64 Q12.8 55.7 16.3 48.9 Q16.2 56.4 17.7 64Z M910.1 64 Q912.8 55.7 916.3 48.9 Q916.2 56.4 917.7 64Z M18.2 64 Q20.1 57.6 21.6 52.3 Q22.6 58.2 23.7 64Z M24.0 64 Q27.6 42.1 37.5 24.1 Q32.3 44.0 34.3 64Z M30.8 64 Q33.7 42.3 40.9 24.6 Q37.4 44.3 39.0 64Z M34.9 64 Q37.1 58.2 29.5 53.4 Q39.8 58.7 41.1 64Z M45.5 64 Q47.6 47.6 43.7 34.2 Q50.2 49.1 51.4 64Z M51.0 64 Q53.6 57.1 50.7 51.4 Q56.9 57.7 58.4 64Z M64.2 64 Q66.5 57.0 62.6 51.2 Q69.5 57.6 70.8 64Z M67.0 64 Q68.9 57.3 62.6 51.8 Q71.3 57.9 72.4 64Z M72.4 64 Q75.8 56.4 68.2 50.2 Q80.0 57.1 82.0 64Z M78.9 64 Q82.5 57.5 82.2 52.2 Q87.2 58.1 89.2 64Z M86.3 64 Q89.3 40.6 87.6 21.5 Q93.1 42.7 94.8 64Z M95.3 64 Q98.5 56.4 93.0 50.2 Q102.5 57.1 104.4 64Z M103.1 64 Q105.7 58.6 106.6 54.2 Q109.1 59.1 110.5 64Z M114.7 64 Q116.7 54.8 121.8 47.3 Q119.4 55.7 120.5 64Z M117.5 64 Q119.9 38.9 129.8 18.4 Q123.1 41.2 124.5 64Z M122.6 64 Q126.0 44.9 122.3 29.2 Q130.4 46.6 132.4 64Z M135.3 64 Q137.2 42.4 146.8 24.7 Q139.6 44.4 140.6 64Z M140.0 64 Q142.9 53.9 150.0 45.7 Q146.6 54.9 148.2 64Z M148.9 64 Q151.7 58.4 148.3 53.8 Q155.3 58.9 156.9 64Z M159.3 64 Q161.2 51.3 163.6 40.9 Q163.7 52.5 164.8 64Z M168.3 64 Q170.4 53.4 165.0 44.8 Q173.0 54.4 174.2 64Z M176.4 64 Q178.4 45.2 183.6 29.9 Q181.1 47.0 182.2 64Z M183.6 64 Q186.0 54.0 186.7 45.9 Q189.1 54.9 190.5 64Z M185.6 64 Q187.3 58.4 196.4 53.8 Q189.6 58.9 190.6 64Z M193.2 64 Q195.7 38.8 204.1 18.2 Q198.9 41.1 200.4 64Z M201.8 64 Q204.9 45.8 198.4 30.9 Q208.8 47.4 210.6 64Z M207.6 64 Q210.5 42.3 204.0 24.6 Q214.2 44.3 215.8 64Z M216.5 64 Q218.3 53.8 217.5 45.5 Q220.6 54.8 221.7 64Z M223.4 64 Q225.8 58.2 228.2 53.5 Q228.9 58.7 230.3 64Z M229.8 64 Q232.4 53.4 230.4 44.7 Q235.7 54.4 237.1 64Z M242.7 64 Q244.7 42.8 237.1 25.5 Q247.2 44.7 248.3 64Z M242.5 64 Q246.1 51.0 239.0 40.3 Q250.7 52.2 252.7 64Z M256.5 64 Q258.8 50.5 253.2 39.5 Q261.7 51.8 263.0 64Z M258.6 64 Q261.7 47.8 270.2 34.6 Q265.7 49.3 267.5 64Z M270.4 64 Q274.0 41.2 272.7 22.6 Q278.6 43.3 280.6 64Z M273.3 64 Q276.7 45.9 276.6 31.0 Q281.0 47.5 283.0 64Z M286.8 64 Q289.7 47.7 288.8 34.4 Q293.4 49.2 295.1 64Z M294.2 64 Q296.1 46.5 290.0 32.2 Q298.5 48.1 299.5 64Z M298.4 64 Q300.9 46.8 306.2 32.8 Q304.0 48.4 305.4 64Z M307.9 64 Q310.7 48.3 312.2 35.5 Q314.2 49.7 315.8 64Z M315.1 64 Q317.7 51.4 314.0 41.1 Q321.1 52.6 322.6 64Z M323.5 64 Q326.5 46.5 327.5 32.2 Q330.3 48.1 332.0 64Z M332.4 64 Q335.4 52.7 331.4 43.5 Q339.3 53.7 341.0 64Z M335.1 64 Q337.7 51.2 345.8 40.7 Q341.0 52.3 342.4 64Z M343.3 64 Q346.2 40.1 352.9 20.6 Q350.0 42.3 351.6 64Z M354.7 64 Q357.1 53.4 359.7 44.7 Q360.2 54.4 361.6 64Z M359.0 64 Q361.4 55.9 369.5 49.2 Q364.4 56.6 365.8 64Z M364.6 64 Q366.9 56.4 361.8 50.2 Q369.7 57.1 371.0 64Z M373.7 64 Q377.0 50.0 376.3 38.6 Q381.2 51.3 383.1 64Z M381.7 64 Q385.0 39.5 395.1 19.5 Q389.2 41.8 391.1 64Z M390.2 64 Q392.4 56.7 395.3 50.7 Q395.3 57.4 396.6 64Z M399.3 64 Q401.6 51.5 407.8 41.3 Q404.5 52.7 405.9 64Z M402.2 64 Q404.3 55.0 410.0 47.6 Q406.9 55.8 408.1 64Z M409.3 64 Q413.0 53.7 407.6 45.2 Q417.6 54.6 419.7 64Z M416.2 64 Q419.4 42.3 429.1 24.6 Q423.6 44.3 425.5 64Z M429.5 64 Q431.7 53.6 436.5 45.1 Q434.5 54.5 435.8 64Z M437.8 64 Q439.8 41.9 436.6 23.8 Q442.4 43.9 443.6 64Z M441.3 64 Q444.0 33.7 454.0 8.9 Q447.4 36.4 448.9 64Z M448.5 64 Q450.4 34.1 459.0 9.6 Q452.8 36.8 453.8 64Z M460.0 64 Q462.0 54.8 469.9 47.3 Q464.7 55.6 465.9 64Z M460.2 64 Q463.6 42.9 470.4 25.7 Q468.0 44.8 469.9 64Z M474.4 64 Q478.0 49.1 472.4 36.9 Q482.7 50.4 484.7 64Z M483.8 64 Q485.7 33.9 481.9 9.3 Q488.1 36.6 489.2 64Z M486.5 64 Q489.3 56.4 495.7 50.1 Q492.8 57.0 494.3 64Z M494.0 64 Q496.4 34.5 489.9 10.4 Q499.4 37.2 500.8 64Z M502.6 64 Q504.9 44.0 513.4 27.6 Q507.7 45.8 509.0 64Z M509.1 64 Q510.9 57.6 512.2 52.4 Q513.1 58.2 514.1 64Z M517.4 64 Q521.1 54.7 529.9 47.2 Q525.8 55.6 527.8 64Z M523.8 64 Q527.4 36.1 528.8 13.2 Q531.9 38.6 533.9 64Z M536.0 64 Q538.5 56.9 540.7 51.0 Q541.8 57.5 543.2 64Z M542.4 64 Q545.1 42.4 552.4 24.8 Q548.6 44.4 550.1 64Z M546.6 64 Q550.2 51.1 558.4 40.6 Q554.7 52.3 556.8 64Z M554.5 64 Q558.0 50.3 560.0 39.2 Q562.6 51.6 564.7 64Z M564.1 64 Q566.0 54.9 557.9 47.5 Q568.4 55.8 569.5 64Z M569.0 64 Q571.7 40.0 571.0 20.4 Q575.1 42.2 576.7 64Z M580.8 64 Q582.7 46.2 577.5 31.6 Q585.1 47.8 586.2 64Z M586.9 64 Q590.5 48.6 599.6 36.0 Q595.0 50.0 597.1 64Z M591.2 64 Q593.5 48.1 601.7 35.2 Q596.5 49.6 597.9 64Z M604.3 64 Q606.2 48.0 605.6 34.8 Q608.6 49.4 609.7 64Z M603.1 64 Q606.3 53.4 599.1 44.8 Q610.5 54.4 612.3 64Z M613.3 64 Q615.5 56.3 620.5 49.9 Q618.4 57.0 619.7 64Z M619.9 64 Q623.0 50.3 617.5 39.1 Q627.0 51.6 628.8 64Z M629.5 64 Q632.5 50.9 640.6 40.2 Q636.4 52.1 638.2 64Z M633.8 64 Q636.5 38.6 631.5 17.9 Q640.0 40.9 641.6 64Z M643.5 64 Q645.6 37.5 641.4 15.8 Q648.3 39.9 649.5 64Z M653.5 64 Q655.7 40.8 660.9 21.9 Q658.4 42.9 659.6 64Z M662.8 64 Q665.1 55.3 673.7 48.1 Q668.0 56.1 669.4 64Z M666.4 64 Q668.3 53.4 664.4 44.7 Q670.8 54.3 671.9 64Z M676.8 64 Q679.4 52.3 688.4 42.8 Q682.6 53.4 684.1 64Z M683.0 64 Q685.5 41.3 689.9 22.7 Q688.7 43.3 690.1 64Z M686.7 64 Q689.1 54.4 695.9 46.6 Q692.2 55.3 693.5 64Z M695.7 64 Q698.9 37.8 700.3 16.3 Q702.9 40.2 704.7 64Z M706.4 64 Q709.0 53.7 701.6 45.2 Q712.4 54.6 713.9 64Z M714.2 64 Q717.0 43.3 711.9 26.4 Q720.6 45.2 722.2 64Z M718.5 64 Q720.5 55.7 717.5 49.0 Q723.1 56.5 724.2 64Z M727.5 64 Q731.0 46.6 731.9 32.4 Q735.6 48.2 737.6 64Z M737.1 64 Q739.7 52.3 738.1 42.8 Q742.9 53.4 744.3 64Z M739.7 64 Q742.8 53.9 750.3 45.7 Q746.7 54.8 748.4 64Z M747.9 64 Q750.3 48.9 759.0 36.5 Q753.4 50.3 754.8 64Z M759.6 64 Q761.3 57.4 769.1 52.0 Q763.5 58.0 764.5 64Z M766.1 64 Q769.5 34.3 778.9 10.1 Q774.0 37.0 776.0 64Z M771.6 64 Q775.2 54.6 782.3 47.0 Q779.9 55.5 781.9 64Z M777.4 64 Q780.6 56.9 787.6 51.1 Q784.7 57.5 786.5 64Z M786.2 64 Q789.2 50.2 795.4 38.9 Q793.1 51.5 794.9 64Z M797.8 64 Q799.9 49.7 806.1 38.1 Q802.5 51.0 803.7 64Z M801.4 64 Q803.7 58.6 807.3 54.2 Q806.8 59.1 808.2 64Z M809.6 64 Q813.2 55.4 811.1 48.4 Q817.7 56.2 819.8 64Z M815.2 64 Q818.0 47.7 817.1 34.4 Q821.5 49.2 823.0 64Z M829.8 64 Q831.7 40.5 830.6 21.2 Q834.1 42.6 835.2 64Z M832.3 64 Q835.5 57.2 832.4 51.6 Q839.5 57.8 841.3 64Z M838.8 64 Q841.7 56.9 834.2 51.0 Q845.5 57.5 847.2 64Z M845.5 64 Q848.3 50.1 849.6 38.7 Q851.8 51.4 853.4 64Z M859.6 64 Q861.4 40.9 861.3 22.0 Q863.9 43.0 864.9 64Z M862.8 64 Q866.0 42.7 859.1 25.3 Q870.1 44.7 871.9 64Z M871.9 64 Q875.4 55.0 883.4 47.7 Q880.0 55.8 882.1 64Z M876.5 64 Q880.1 46.6 880.1 32.4 Q884.6 48.2 886.6 64Z M-23.5 64 Q-19.9 46.6 -19.9 32.4 Q-15.4 48.2 -13.4 64Z M885.1 64 Q887.8 44.8 888.6 29.1 Q891.3 46.5 892.8 64Z M-14.9 64 Q-12.2 44.8 -11.4 29.1 Q-8.7 46.5 -7.2 64Z M890.0 64 Q893.2 51.1 886.0 40.6 Q897.2 52.3 899.0 64Z M-10.0 64 Q-6.8 51.1 -14.0 40.6 Q-2.8 52.3 -1.0 64Z'/%3E%3Crect y='56' width='900' height='8'/%3E%3C/svg%3E");
+  --mask-hills: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 64' preserveAspectRatio='none'%3E%3Cpath d='M0 64 L0 34.6 L20 31.2 L40 29.9 L60 30.8 L80 33.1 L100 35.7 L120 37.4 L140 37.8 L160 37.1 L180 36.1 L200 35.7 L220 36.4 L240 37.8 L260 38.9 L280 38.8 L300 36.9 L320 33.4 L340 29.3 L360 25.8 L380 24.1 L400 24.4 L420 26.4 L440 29.1 L460 31.4 L480 32.9 L500 33.7 L520 34.7 L540 36.8 L560 40.3 L580 44.8 L600 49.4 L620 52.8 L640 54.1 L660 53.2 L680 50.9 L700 48.3 L720 46.6 L740 46.2 L760 46.9 L780 47.9 L800 48.3 L820 47.6 L840 46.2 L860 45.1 L880 45.2 L900 47.1 L920 50.6 L940 54.7 L960 58.2 L980 59.9 L1000 59.6 L1020 57.6 L1040 54.9 L1060 52.6 L1080 51.1 L1100 50.3 L1120 49.3 L1140 47.2 L1160 43.7 L1180 39.2 L1200 34.6 L1200 64Z'/%3E%3C/svg%3E");
+  --wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='12' viewBox='0 0 36 12'%3E%3Cpath d='M0 6C6 0 12 0 18 6S30 12 36 6' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-dasharray='7 5'/%3E%3C/svg%3E");
+  --wave-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='36' viewBox='0 0 12 36'%3E%3Cpath d='M6 0C0 6 0 12 6 18S12 30 6 36' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-dasharray='7 5'/%3E%3C/svg%3E");
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .26  0 0 0 0 .1  0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23n%29'/%3E%3C/svg%3E");
+}
+
+/* A section can lift its top edge into grass or hills. The strip is drawn in the section's own colour, so it reads as the
+   section rising out of the meadow (or out of the section above) rather than a straight cut. */
+.edge-grass,
+.edge-hills {
+  position: relative;
+}
+.edge-grass::before,
+.edge-hills::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% - 1px);
+  background: var(--edge, currentColor);
+  pointer-events: none;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: left bottom;
+  mask-position: left bottom;
+}
+.edge-grass::before {
+  height: clamp(36px, 5vw, 64px);
+  -webkit-mask-image: var(--mask-grass);
+  mask-image: var(--mask-grass);
+  -webkit-mask-size: 900px 100%;
+  mask-size: 900px 100%;
+}
+.edge-hills::before {
+  height: clamp(36px, 5vw, 64px);
+  -webkit-mask-image: var(--mask-hills);
+  mask-image: var(--mask-hills);
+  -webkit-mask-size: 1200px 100%;
+  mask-size: 1200px 100%;
+}
+.on-dark { --edge: var(--loam); }
+.on-sand { --edge: var(--paper-2); }
+.on-light { --edge: var(--paper); }
+@media (prefers-reduced-motion: no-preference) {
+  .edge-grass::before,
+  .edge-hills::before {
+    transition: background-color 0.9s var(--ease);
+  }
+}
+
+/* Warm light: a low sun glow on dark sections, a sun-washed corner and fine paper grain on light ones */
+.on-dark {
+  background-image: radial-gradient(ellipse 60% 55% at 88% 78%, rgb(212 165 58 / 0.13), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 4% 96%, rgb(107 122 46 / 0.16), transparent 70%);
+}
+.on-light {
+  background-image: radial-gradient(ellipse 55% 45% at 96% 70%, rgb(212 165 58 / 0.16), transparent 70%), var(--grain);
+  background-size: auto, 220px;
+}
+.on-sand {
+  background-image: radial-gradient(ellipse 50% 50% at 0% 60%, rgb(212 165 58 / 0.18), transparent 70%), var(--grain);
+  background-size: auto, 220px;
+}
+:root[data-theme='night'] .on-dark {
+  background-image: radial-gradient(ellipse 60% 55% at 88% 78%, rgb(212 165 58 / 0.07), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 4% 96%, rgb(120 150 130 / 0.1), transparent 70%);
+}
+:root[data-theme='night'] .on-light,
+:root[data-theme='night'] .on-sand {
+  background-image: radial-gradient(ellipse 55% 45% at 96% 70%, rgb(212 165 58 / 0.06), transparent 70%);
+  background-size: auto;
+}
+
+/* Section label with a small sprig in front of it */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0;
+}
+.eyebrow svg {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--ochre);
+}
+.on-dark .eyebrow svg,
+:root[data-theme='night'] .eyebrow svg {
+  color: var(--straw);
 }

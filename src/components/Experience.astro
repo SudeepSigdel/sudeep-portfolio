@@ -1,0 +1,169 @@
+---
+import Sprig from './Sprig.astro';
+// Work, teaching, hackathons and the degree: facts from the site and from Sudeep's own story.
+const rows = [
+  {
+    when: 'Since August',
+    title: 'Technest Innovation',
+    role: 'Intern',
+    body: 'Working on RestaurantMS, a multi-tenant restaurant and lodge management system that is live in production. Details are under Work.',
+    href: '#work',
+  },
+  {
+    when: 'May 2026',
+    title: 'A FastAPI workshop',
+    role: 'Co-organiser and teacher',
+    body: 'Run with a friend: he taught Python, I taught FastAPI. About 15 people came to every session, and many more dropped in. Teaching is the fastest way to find the gaps in what you thought you knew.',
+  },
+  {
+    when: '2024 – 2026',
+    title: 'Hackathons',
+    role: 'CSITAN · Codefest Chitwan · Hult Prize',
+    body: 'CrisisCare, AegisWeb and HumanSign. No trophies yet. The experience, thankfully, is not pending.',
+    href: '#work',
+  },
+  {
+    when: 'Expected 2027',
+    title: 'Tribhuvan University',
+    role: 'BSc. CSIT, final year',
+    body: 'Final-year project: NEPSE Signal Desk, a signal platform for the Nepal Stock Exchange.',
+    href: '#work',
+  },
+];
+---
+
+<section id="experience" class="section on-sand edge-hills" aria-labelledby="exp-h">
+  <div class="wrap">
+    <p class="mono muted eyebrow reveal"><Sprig />02 / Experience</p>
+    <h2 id="exp-h" class="serif reveal">Where the work happens.</h2>
+    <ol data-timeline>
+      <span class="track" aria-hidden="true"><span class="fill"></span></span>
+      {
+        rows.map((r, i) => (
+          <li class="row reveal" style={`--d:${i * 90}ms`}>
+            <span class="node" aria-hidden="true" />
+            <p class="mono muted when">{r.when}</p>
+            <div>
+              <h3 class="serif">{r.title}</h3>
+              <p class="mono role">{r.role}</p>
+              <p class="body">
+                {r.body} {r.href && <a href={r.href}>See the project<span class="sr"> ({r.title})</span> ↓</a>}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  h2 {
+    margin: 1.5rem 0 3.5rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 1.75rem;
+    position: relative;
+  }
+  /* a line down the left; a gold fill grows with scroll and each node lights as it is reached */
+  .track {
+    position: absolute;
+    left: 0.45rem;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--ink) 30%, transparent) 0 7px, transparent 7px 15px);
+    border-radius: 3px;
+  }
+  .fill {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom, var(--ochre) 0 7px, transparent 7px 15px);
+    transform: scaleY(var(--p, 0));
+    transform-origin: top;
+    filter: drop-shadow(0 0 6px rgb(212 165 58 / 0.7));
+    border-radius: 3px;
+  }
+  .node {
+    position: absolute;
+    left: calc(-1.75rem + 0.45rem - 5px);
+    top: 2.35rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 56% 44% 52% 48% / 52% 56% 44% 48%;
+    background: var(--paper-2);
+    border: 2px solid color-mix(in srgb, var(--ink) 40%, transparent);
+    transition: background-color 0.5s var(--ease), border-color 0.5s var(--ease), box-shadow 0.5s var(--ease), transform 0.5s var(--ease);
+  }
+  .row.lit .node {
+    background: var(--straw);
+    border-color: var(--ochre);
+    box-shadow: 0 0 0 5px rgb(212 165 58 / 0.25), 0 0 16px rgb(212 165 58 / 0.8);
+    transform: scale(1.15);
+  }
+  .row {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    padding-block: 2rem 2.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  }
+  .when {
+    margin: 0.5rem 0 0;
+  }
+  h3 {
+    margin: 0;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+  }
+  .role {
+    margin: 0.6rem 0 1.1rem;
+  }
+  .body {
+    margin: 0;
+    max-width: 58ch;
+  }
+  .body a {
+    white-space: nowrap;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (min-width: 900px) {
+    .row {
+      grid-template-columns: 1fr 3fr;
+    }
+  }
+</style>
+
+<script>
+  const ol = document.querySelector<HTMLElement>('[data-timeline]');
+  if (ol) {
+    const rows = Array.from(ol.querySelectorAll<HTMLElement>('.row'));
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const r = ol.getBoundingClientRect();
+      const mark = window.innerHeight * 0.6;
+      const p = Math.min(Math.max((mark - r.top) / r.height, 0), 1);
+      ol.style.setProperty('--p', p.toFixed(3));
+      rows.forEach((row) => row.classList.toggle('lit', row.getBoundingClientRect().top + 40 < mark));
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue);
+    update();
+  }
+</script>

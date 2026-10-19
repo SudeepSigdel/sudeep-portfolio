@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import Sprig from '../components/Sprig.astro';
+import { site } from '../data/site';
+---
+
+<Base title={`Page not found · ${site.name}`} description="This page has wandered off into the meadow.">
+  <main id="main" class="lost on-dark">
+    <div class="wrap">
+      <p class="mono eyebrow"><Sprig />Error 404</p>
+      <h1 class="serif">This page wandered off into the meadow.</h1>
+      <p class="line">It has been banned from this website for one hundred years. (Yes, one hundred. The electricity has opinions.)</p>
+      <p class="line soft">Have you tried reinstalling Windows?</p>
+      <p class="actions">
+        <a class="btn primary mono" href="/">Back to the meadow</a>
+        <a class="btn mono" href="/#work">See the work instead</a>
+      </p>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .lost {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: 6rem;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 82% 82%, rgb(212 165 58 / 0.22), transparent 70%),
+      radial-gradient(ellipse 50% 50% at 6% 94%, rgb(107 122 46 / 0.2), transparent 70%);
+  }
+  .eyebrow {
+    color: var(--straw);
+  }
+  h1 {
+    margin: 1.2rem 0 1.6rem;
+    font-size: clamp(2.4rem, 7vw, 5.5rem);
+    max-width: 16ch;
+  }
+  .line {
+    margin: 0 0 0.8rem;
+    max-width: 52ch;
+    color: var(--parchment);
+  }
+  .soft {
+    font-style: italic;
+    color: var(--dust);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2.2rem 0 0;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.2rem;
+    color: var(--parchment);
+    text-decoration: none;
+    border: 1px solid color-mix(in srgb, var(--straw) 70%, transparent);
+    transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+  }
+  .btn:hover {
+    background: var(--straw);
+    color: var(--umber);
+  }
+  .btn.primary {
+    background: var(--straw);
+    color: var(--umber);
+  }
+  .btn.primary:hover {
+    background: var(--parchment);
+  }
+</style>

@@ -1,0 +1,296 @@
+---
+// One small drawing of the natural world for each project. Decorative only: these are not diagrams and say nothing about
+// the project's numbers. The idea behind each is in the comment above it.
+interface Props {
+  kind: 'wheat' | 'pass' | 'rings' | 'river' | 'lantern' | 'web' | 'feather';
+}
+const { kind } = Astro.props;
+const f = (n: number) => n.toFixed(1);
+
+// wheat: an orders-to-table harvest, three ears bound together
+const ears = [-0.34, 0, 0.34].map((a) => {
+  const bx = 120;
+  const by = 182;
+  const L = a === 0 ? 140 : 124;
+  const tx = bx + Math.sin(a) * L;
+  const ty = by - Math.cos(a) * L;
+  const cx = bx + Math.sin(a) * L * 0.45 + a * 22;
+  const cy = by - Math.cos(a) * L * 0.55;
+  const grains: { x: number; y: number; r: number }[] = [];
+  for (let i = 0; i < 7; i++) {
+    const t = 0.52 + i * 0.07;
+    const px = (1 - t) * (1 - t) * bx + 2 * (1 - t) * t * cx + t * t * tx;
+    const py = (1 - t) * (1 - t) * by + 2 * (1 - t) * t * cy + t * t * ty;
+    grains.push({ x: px, y: py, r: (a * 180) / Math.PI });
+  }
+  return { bx, by, cx, cy, tx, ty, grains };
+});
+
+// rings: the layers a request passes through, as the growth rings of a tree
+const ringPaths = Array.from({ length: 8 }, (_, i) => {
+  const r0 = 12 + i * 10.5;
+  const pts = Array.from({ length: 64 }, (_, k) => {
+    const th = (k / 64) * Math.PI * 2;
+    const r = r0 * (1 + 0.035 * Math.sin(3 * th + i * 1.3) + 0.022 * Math.sin(5 * th + i * 0.7 + 1));
+    return `${k ? 'L' : 'M'}${f(120 + Math.cos(th) * r)} ${f(100 + Math.sin(th) * r)}`;
+  });
+  return pts.join(' ') + 'Z';
+});
+
+// river: a market as a river with its seasons
+const flows = Array.from({ length: 6 }, (_, i) => {
+  const y0 = 70 + i * 18;
+  const amp = 4 + i * 1.6;
+  const pts = Array.from({ length: 25 }, (_, k) => {
+    const x = 14 + k * 9.4;
+    const y = y0 + Math.sin(k * 0.55 + i * 0.9) * amp + Math.sin(k * 0.21 + i) * amp * 0.6;
+    return `${k ? 'L' : 'M'}${f(x)} ${f(y)}`;
+  });
+  return pts.join(' ');
+});
+
+// web: a crawler's patient work, strung with dew
+const spokes = Array.from({ length: 11 }, (_, i) => {
+  const a = (i / 11) * Math.PI * 2 + 0.2;
+  const len = 78 + ((i * 37) % 17);
+  return { a, len, x: 120 + Math.cos(a) * len, y: 104 + Math.sin(a) * len };
+});
+const loops = [0.2, 0.36, 0.52, 0.68, 0.84].map((k) =>
+  spokes
+    .map((s, i) => {
+      const n = spokes[(i + 1) % spokes.length];
+      const ax = 120 + (s.x - 120) * k;
+      const ay = 104 + (s.y - 104) * k;
+      const bx = 120 + (n.x - 120) * k;
+      const by = 104 + (n.y - 104) * k;
+      const mx = (ax + bx) / 2 + (120 - (ax + bx) / 2) * 0.12;
+      const my = (ay + by) / 2 + (104 - (ay + by) / 2) * 0.12;
+      return `${i ? '' : `M${f(ax)} ${f(ay)}`} Q${f(mx)} ${f(my)} ${f(bx)} ${f(by)}`;
+    })
+    .join(' '),
+);
+const dew = [
+  [0.52, 2],
+  [0.68, 5],
+  [0.36, 8],
+  [0.84, 0],
+].map(([k, i]) => ({ x: 120 + (spokes[i].x - 120) * k, y: 104 + (spokes[i].y - 104) * k }));
+// feather: a quill, for the proof that a person wrote it
+const quill = (() => {
+  const P0: [number, number] = [52, 176];
+  const C: [number, number] = [118, 118];
+  const P1: [number, number] = [198, 26];
+  const at = (t: number) => {
+    const x = (1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * C[0] + t * t * P1[0];
+    const y = (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * C[1] + t * t * P1[1];
+    const dx = 2 * (1 - t) * (C[0] - P0[0]) + 2 * t * (P1[0] - C[0]);
+    const dy = 2 * (1 - t) * (C[1] - P0[1]) + 2 * t * (P1[1] - C[1]);
+    const m = Math.hypot(dx, dy);
+    return { x, y, tx: dx / m, ty: dy / m };
+  };
+  const barbs: string[] = [];
+  const left: string[] = [];
+  const right: string[] = [];
+  for (let i = 0; i <= 16; i++) {
+    const t = 0.18 + (i / 16) * 0.8;
+    const p = at(t);
+    const L = 30 * Math.sin(Math.PI * (0.12 + 0.88 * (1 - (t - 0.18) / 0.8) * 0.55 + 0.1)) * (1.15 - 0.55 * t);
+    for (const side of [-1, 1]) {
+      const nx = -p.ty * side;
+      const ny = p.tx * side;
+      const ex = p.x + nx * L + p.tx * L * 0.85;
+      const ey = p.y + ny * L + p.ty * L * 0.85;
+      barbs.push(`M${f(p.x)} ${f(p.y)}L${f(ex)} ${f(ey)}`);
+      (side < 0 ? left : right).push(`${f(ex)} ${f(ey)}`);
+    }
+  }
+  const tip = at(1);
+  const outline = `M${left[0]} L${left.slice(1).join(' L')} L${f(tip.x)} ${f(tip.y)} L${right.slice(0).reverse().join(' L')} Z`;
+  const rachis = `M${P0[0]} ${P0[1]}Q${C[0]} ${C[1]} ${P1[0]} ${P1[1]}`;
+  return { barbs: barbs.join(' '), outline, rachis };
+})();
+---
+
+<svg class={`motif m-${kind}`} viewBox="0 0 240 200" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {
+    kind === 'wheat' && (
+      <>
+        <path class="ground" d="M26 184c30-4 60 2 94-1s64 3 94-1" />
+        {ears.map((e) => (
+          <g>
+            <path d={`M${e.bx} ${e.by} Q${f(e.cx)} ${f(e.cy)} ${f(e.tx)} ${f(e.ty)}`} />
+            {e.grains.map((g) => (
+              <g>
+                <ellipse class="grain" cx={f(g.x - 5)} cy={f(g.y)} rx="3.2" ry="7" transform={`rotate(${f(g.r - 28)} ${f(g.x - 5)} ${f(g.y)})`} />
+                <ellipse class="grain" cx={f(g.x + 5)} cy={f(g.y)} rx="3.2" ry="7" transform={`rotate(${f(g.r + 28)} ${f(g.x + 5)} ${f(g.y)})`} />
+              </g>
+            ))}
+            <ellipse class="grain" cx={f(e.tx)} cy={f(e.ty - 5)} rx="3" ry="7" />
+          </g>
+        ))}
+        <path d="M112 168c5 3 11 3 16 0" stroke-width="3" />
+        <path d="M60 184c-3-10-1-18 4-24M70 184c1-8 4-14 9-18M170 184c3-9 8-16 14-19M182 184c0-7 3-12 7-15" />
+      </>
+    )
+  }
+  {
+    kind === 'pass' && (
+      <>
+        <path d="M8 172L66 66l22 30l16-22l30 98" />
+        <path d="M112 172L166 52l24 34l14-18l30 104" />
+        <path class="detail" d="M66 66l-6 24l12 10M166 52l-6 28l14 12" />
+        <path d="M0 172h240" />
+        <path d="M120 70a26 26 0 0 0 0 52Z" class="moon" />
+        <path d="M120 70a26 26 0 0 1 0 52Z" class="sun" />
+        <circle cx="120" cy="96" r="26" />
+        <path class="detail" d="M156 96h10M153 79l8-6M153 113l8 6M120 62v-8" />
+        <path class="detail" d="M60 186c20-5 40 3 60 0s40 4 60 0" />
+      </>
+    )
+  }
+  {
+    kind === 'rings' && (
+      <>
+        {ringPaths.map((d, i) => <path d={d} class={i === 5 ? 'gate' : ''} />)}
+        <path class="detail" d="M120 100L196 78M120 100L58 158" />
+        <circle cx="120" cy="100" r="3" fill="currentColor" />
+      </>
+    )
+  }
+  {
+    kind === 'river' && (
+      <>
+        <circle class="sun" cx="190" cy="42" r="15" />
+        <path class="detail" d="M190 16v-6M190 74v6M164 42h-6M216 42h6M172 24l-4-4M208 24l4-4" />
+        {flows.map((d, i) => <path d={d} class={i === 2 ? 'gate' : ''} />)}
+        <ellipse cx="40" cy="176" rx="14" ry="6" />
+        <ellipse cx="66" cy="182" rx="8" ry="4" />
+        <path class="detail" d="M196 186c-2-18 0-34 6-46M206 186c0-14 4-26 11-34" />
+      </>
+    )
+  }
+  {
+    kind === 'lantern' && (
+      <>
+        <defs>
+          <radialGradient id="mt-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="var(--straw)" stop-opacity="0.55"></stop>
+            <stop offset="1" stop-color="var(--straw)" stop-opacity="0"></stop>
+          </radialGradient>
+        </defs>
+        <circle cx="120" cy="112" r="70" fill="url(#mt-glow)" stroke="none" class="halo" />
+        <path d="M14 36c50-14 120-14 214-2" />
+        <path class="detail" d="M80 26c-6 8-6 14-2 20M170 24c4 8 8 12 16 12" />
+        <path d="M120 30v34" />
+        <path d="M100 66h40l4 8h-48Z" />
+        <rect x="98" y="74" width="44" height="64" rx="5" />
+        <path class="detail" d="M110 74v64M130 74v64" />
+        <path class="flame" d="M120 128c-9-8-10-18-3-27c2 5 5 7 8 8c0-5 2-9 5-12c7 10 6 22-10 31Z" />
+        <path d="M96 138h48l-4 10h-40Z" />
+        <path d="M0 178c40-16 80-20 120-8s80 14 120-2" />
+        <path class="detail" d="M60 190c20-4 40 2 60 0s40 3 60 0" />
+      </>
+    )
+  }
+  {
+    kind === 'feather' && (
+      <>
+        <path class="vane" d={quill.outline} />
+        <path class="detail" d={quill.barbs} />
+        <path d={quill.rachis} stroke-width="2.2" />
+        <path d="M30 188c14-9 24 6 40-2s26-9 42-2s26 6 40-2" class="detail" />
+        <path class="ink" d="M44 186c-3-7-6-10-6-14a6 6 0 0 1 12 0c0 4-3 7-6 14Z" />
+      </>
+    )
+  }
+  {
+    kind === 'web' && (
+      <>
+        <path d="M6 18c40 6 76 24 114 86" class="twig" />
+        <path class="detail" d="M24 20c0 10-4 16-10 20M44 26c-2 8-1 14 3 20" />
+        {spokes.map((s) => <path d={`M120 104L${f(s.x)} ${f(s.y)}`} />)}
+        {loops.map((d) => <path d={d} class="loop" />)}
+        {dew.map((p) => (
+          <g class="dew">
+            <circle cx={f(p.x)} cy={f(p.y)} r="4.6" />
+            <circle cx={f(p.x - 1.4)} cy={f(p.y - 1.4)} r="1.2" fill="currentColor" stroke="none" />
+          </g>
+        ))}
+      </>
+    )
+  }
+</svg>
+
+<style is:global>
+  .motif {
+    display: block;
+    width: 100%;
+    height: auto;
+    color: var(--ink);
+    overflow: visible;
+  }
+  .motif .detail {
+    opacity: 0.55;
+    stroke-width: 1.2;
+  }
+  .motif .vane {
+    fill: color-mix(in srgb, var(--straw) 22%, transparent);
+  }
+  .motif .ink {
+    fill: color-mix(in srgb, var(--ink) 80%, transparent);
+  }
+  .motif .grain,
+  .motif .flame {
+    fill: color-mix(in srgb, var(--straw) 55%, transparent);
+  }
+  .motif .sun {
+    fill: color-mix(in srgb, var(--straw) 70%, transparent);
+  }
+  .motif .moon {
+    fill: color-mix(in srgb, var(--ink) 80%, transparent);
+  }
+  .motif .gate {
+    stroke: var(--ochre);
+    stroke-width: 2.4;
+  }
+  :root[data-theme='night'] .motif .gate {
+    stroke: var(--straw);
+  }
+  .motif .loop {
+    stroke-width: 1.1;
+    opacity: 0.7;
+  }
+  .motif .dew circle:first-child {
+    fill: color-mix(in srgb, var(--straw) 28%, transparent);
+    stroke-width: 1.3;
+  }
+  .motif .twig {
+    stroke-width: 2.4;
+  }
+  .motif .halo {
+    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    transform-origin: 120px 112px;
+  }
+  .motif .flame,
+  .motif .dew,
+  .motif .sun {
+    transition: transform 0.8s var(--ease), opacity 0.8s var(--ease);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .plate-motif:hover .halo {
+      transform: scale(1.12);
+    }
+    .plate-motif:hover .flame {
+      transform: scale(1.1);
+    }
+    .plate-motif:hover .dew {
+      transform: scale(1.35);
+    }
+    .plate-motif:hover .m-river .sun,
+    .plate-motif:hover .m-pass .sun {
+      transform: scale(1.08);
+    }
+  }
+</style>

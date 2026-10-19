@@ -1,24 +1,60 @@
 ---
+import Sprig from './Sprig.astro';
+// Facts from the page and from Sudeep's own story, shown as a small field journal.
+const cards = [
+  { front: 'Home', icon: 'hill', back: 'Kawasoti, Nawalpur, Nepal, with a stretch in Kathmandu from grade nine.' },
+  { front: 'Day job', icon: 'sprout', back: 'RestaurantMS at Technest Innovation, live in production since I joined as an intern in August.' },
+  { front: 'Studying', icon: 'book', back: 'BSc. CSIT, final year at Tribhuvan University. Expected 2027.' },
+  { front: 'Teaching', icon: 'bubble', back: 'Co-organised a workshop: a friend taught Python, I taught FastAPI.' },
+  { front: 'Hardware', icon: 'chip', back: 'A gaming PC that remains a beautiful concept. Old laptops, brought back to life, are very real.' },
+  { front: 'Side work', icon: 'firefly', back: 'ML-backed services and agents that treat the model as untrusted.' },
+];
 ---
 
-<section id="about" class="section on-dark" aria-labelledby="about-h">
+<section id="about" class="section on-dark edge-grass" aria-labelledby="about-h">
   <div class="wrap grid">
-    <p class="mono muted reveal">01 / About</p>
+    <p class="mono muted eyebrow reveal"><Sprig />01 / About</p>
     <div class="body">
       <h2 id="about-h" class="serif reveal">Quiet systems, built to hold under load.</h2>
       <div class="cols reveal">
         <p>
-          I'm a backend engineer from Nepal and a final-year BSc. CSIT student at Tribhuvan University
-          (expected 2027). I like the unglamorous parts of a system: permissions, data models, validation, and
-          the places where things quietly break.
+          I'm a backend engineer from Kawasoti, Nepal, and a final-year BSc. CSIT student at Tribhuvan University
+          (expected 2027). I work mostly in Python with FastAPI, REST APIs, PostgreSQL and SQLAlchemy, and I like the
+          unglamorous parts of a system: permissions, data models, validation, and the places where things quietly break.
         </p>
         <p>
-          Since August I've been an intern at Technest Innovation, where I work on RestaurantMS, a
-          multi-tenant billing and order system that is live in production. Outside work I build ML-backed
-          services and agents that treat the model as untrusted.
+          It started with a Windows XP computer, a CRT monitor and far too many reinstalls, and grew into taking
+          machines apart, a first hackathon where the web finally made sense, and a workshop where I got to teach it.
+          Outside work I build ML-backed services and agents that treat the model as untrusted.
         </p>
       </div>
-      <p class="mono muted reveal">Kawasoti, Nawalpur, Nepal</p>
+      <ul class="journal reveal" aria-label="A few facts">
+        {
+          cards.map((c, i) => (
+            <li style={`--i:${i}`}>
+              <span class="stone" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                  {c.icon === 'hill' && (<><path d="M3 25c6-9 11-9 15-3c3-4 7-5 11-1" /><circle cx="22" cy="9" r="3.5" /><path d="M3 28h26" /></>)}
+                  {c.icon === 'sprout' && (<><path d="M16 28V15" /><path d="M16 19c-6 0-9-3-9.500-8c6 0 9 3 9.500 8Z" /><path d="M16 15c5 0 8-3 8.500-8c-5 0-8 3-8.500 8Z" /><path d="M8 28h16" /></>)}
+                  {c.icon === 'book' && (<><path d="M16 9c-3-2-8-2-12-1v17c4-1 9-1 12 1c3-2 8-2 12-1V8c-4-1-9-1-12 1Z" /><path d="M16 9v17" /></>)}
+                  {c.icon === 'chip' && (<><path d="M9 9h14v14H9Z" /><path d="M13 13h6v6h-6Z" /><path d="M12 4v5M20 4v5M12 23v5M20 23v5M4 12h5M4 20h5M23 12h5M23 20h5" /></>)}
+                  {c.icon === 'bubble' && (<><path d="M4 7h24v15H14l-6 5v-5H4Z" /><path d="M10 12h12M10 17h8" /></>)}
+                  {c.icon === 'firefly' && (<><circle cx="16" cy="16" r="2.5" fill="currentColor" /><circle cx="16" cy="16" r="7" opacity="0.5" /><circle cx="16" cy="16" r="12" opacity="0.25" /></>)}
+                </svg>
+              </span>
+              <div>
+                <p class="mono label">{c.front}</p>
+                <p class="text">{c.back}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="reveal story-link">
+        <button class="mono go" type="button" data-story-open>
+          <span aria-hidden="true">✦</span> Watch the story, as a short film <span aria-hidden="true">→</span>
+        </button>
+      </p>
     </div>
   </div>
 </section>
@@ -42,8 +78,99 @@
   .cols p {
     margin: 0;
   }
-  .body > .mono {
-    margin: 3rem 0 0;
+  .story-link {
+    margin: 2.5rem 0 0;
+  }
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    background: transparent;
+    color: var(--parchment);
+    border: 1px solid color-mix(in srgb, var(--straw) 70%, transparent);
+    cursor: pointer;
+    transition:
+      background-color 0.4s var(--ease),
+      color 0.4s var(--ease);
+  }
+  .go:hover {
+    background: var(--straw);
+    color: #1a170d;
+  }
+  /* a field journal: each fact sits beside a small stone with its drawing */
+  .journal {
+    list-style: none;
+    margin: 3.25rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 0 3rem;
+    max-width: 56rem;
+  }
+  .journal li {
+    display: flex;
+    gap: 1.1rem;
+    align-items: flex-start;
+    padding: 1.4rem 0 1.5rem;
+    border-top: 1px solid rgb(241 233 214 / 0.18);
+  }
+  .stone {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    color: var(--straw);
+    border: 1.5px solid rgb(212 165 58 / 0.6);
+    background: radial-gradient(circle at 35% 30%, rgb(212 165 58 / 0.22), rgb(212 165 58 / 0.05));
+    border-radius: 54% 46% 50% 50% / 52% 48% 52% 48%;
+    transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+  }
+  .journal li:nth-child(2n) .stone {
+    border-radius: 46% 54% 48% 52% / 50% 52% 48% 50%;
+  }
+  .stone svg {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+  .label {
+    margin: 0 0 0.35rem;
+    color: var(--straw);
+  }
+  .text {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--parchment) 88%, transparent);
+  }
+  @media (hover: hover) {
+    .journal li:hover .stone {
+      transform: translateY(-3px) rotate(-4deg);
+      box-shadow: 0 14px 22px -14px rgb(212 165 58 / 0.7);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .reveal.in .journal li,
+    .js .journal.reveal.in li {
+      animation: journal-in 0.8s var(--ease) both;
+      animation-delay: calc(var(--i) * 90ms + 150ms);
+    }
+    @keyframes journal-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+    }
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   @media (min-width: 900px) {
     .grid {

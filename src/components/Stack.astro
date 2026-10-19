@@ -1,17 +1,27 @@
 ---
+import Sprig from './Sprig.astro';
 import { stack } from '../data/site';
 ---
 
-<section id="stack" class="section on-dark" aria-labelledby="stack-h">
+<section id="stack" class="section on-dark edge-hills" aria-labelledby="stack-h">
   <div class="wrap">
-    <p class="mono muted reveal">03 / Stack</p>
+    <p class="mono muted eyebrow reveal"><Sprig />04 / Stack</p>
     <h2 id="stack-h" class="serif reveal">Tools I reach for.</h2>
+    <p class="aside reveal">Also fluent in “have you tried restarting it?”</p>
     <dl>
       {
         stack.map((g, i) => (
           <div class="row reveal" style={`--d:${i * 90}ms`}>
             <dt class="mono muted">{g.label}</dt>
-            <dd class="mono">{g.items.join(' · ')}</dd>
+            <dd class="mono">
+              <ul class="chips">
+                {g.items.map((it, n) => (
+                  <li style={`--n:${n}`}>
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </dd>
           </div>
         ))
       }
@@ -24,6 +34,11 @@ import { stack } from '../data/site';
     margin: 1.5rem 0 3.5rem;
     font-size: clamp(2rem, 4.6vw, 3.75rem);
   }
+  .aside {
+    margin: -2.4rem 0 3rem;
+    font-style: italic;
+    color: var(--dust);
+  }
   dl {
     margin: 0;
   }
@@ -31,7 +46,7 @@ import { stack } from '../data/site';
     display: grid;
     gap: 0.5rem;
     padding-block: 1.25rem;
-    border-top: 1px solid rgb(246 248 247 / 0.2);
+    border-top: 1px solid rgb(241 233 214 / 0.2);
   }
   dd {
     margin: 0;
@@ -40,7 +55,46 @@ import { stack } from '../data/site';
     font-size: 0.9rem;
     letter-spacing: 0.02em;
   }
-  @media (min-width: 900px) {
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 0.7rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chips li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid rgb(241 233 214 / 0.26);
+    border-radius: 58% 42% 52% 48% / 55% 50% 50% 45%;
+    line-height: 1.4;
+    cursor: default;
+    transition:
+      transform 0.35s var(--ease),
+      border-color 0.35s var(--ease),
+      background-color 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
+  }
+  .chips li:nth-child(2n) {
+    border-radius: 45% 55% 42% 58% / 50% 45% 55% 50%;
+  }
+  .chips li:nth-child(3n) {
+    border-radius: 52% 48% 60% 40% / 45% 58% 42% 55%;
+  }
+  .row:hover .chips li {
+    border-color: rgb(212 165 58 / 0.5);
+  }
+  .chips li:hover {
+    transform: translateY(-4px) rotate(-1.5deg);
+    background: rgb(212 165 58 / 0.14);
+    border-color: var(--straw);
+    box-shadow: 0 8px 22px -10px rgb(212 165 58 / 0.7);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @media (min-width: 900px) {
     .row {
       grid-template-columns: 1fr 3fr;
     }

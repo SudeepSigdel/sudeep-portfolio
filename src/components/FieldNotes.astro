@@ -1,0 +1,534 @@
+---
+import { notes, type Icon, type StopKind } from '../data/trails';
+
+interface Props {
+  project: string;
+  part?: 'trail' | 'numbers';
+}
+const { project, part = 'trail' } = Astro.props;
+const n = notes[project];
+
+// Each glyph is a handful of simple strokes, drawn to sit in a 32 x 32 square.
+const circle = (cx: number, cy: number, r: number) => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const glyphs: Record<Icon, string[]> = {
+  seed: ['M16 28V16', 'M16 20c-5 0-8-3-8.5-8c5 0 8 3 8.5 8Z', 'M16 16c5 0 8-3 8.5-8c-5 0-8 3-8.5 8Z'],
+  flame: ['M16 4c1 5 7 8 7 15a7 7 0 0 1-14 0c0-4 2-6 4-8c0 3 1 4 3 4c-1-4-1-7 0-11Z'],
+  basket: ['M5 14h22l-3 13H8Z', 'M10 14l4-8M22 14l-4-8', 'M10 20h12'],
+  sun: [circle(16, 16, 5), 'M16 3v4M16 25v4M3 16h4M25 16h4M7 7l3 3M22 22l3 3M25 7l-3 3M10 22l-3 3'],
+  eye: ['M3 16c4-6 8-8 13-8s9 2 13 8c-4 6-8 8-13 8s-9-2-13-8Z', circle(16, 16, 4)],
+  wind: ['M4 12h14a4 4 0 1 0-4-4', 'M4 18h20a4 4 0 1 1-4 4', 'M4 24h10'],
+  gate: ['M3 8c8 3 18 3 26 0', 'M6 14h20', 'M8 8v20M24 8v20'],
+  lantern: ['M16 3v4', 'M11 7h10l2 4H9Z', 'M10 11h12v14H10Z', 'M12 25h8', 'M16 14c-2 2-2 5 0 7c2-2 2-5 0-7Z'],
+  footprint: ['M11 28c-4 0-5-5-4-9s3-8 6-6s2 6 1 10s-1 5-3 5Z', 'M22 24c-3 0-4-4-3-8s3-8 6-7s2 5 1 9s-1 6-4 6Z'],
+  compass: [circle(16, 16, 12), 'M21 11l-4 9l-6 1l4-9Z'],
+  letter: ['M4 8h24v16H4Z', 'M4 10l12 9l12-9'],
+  drop: ['M16 4c5 7 8 11 8 16a8 8 0 0 1-16 0c0-5 3-9 8-16Z'],
+  web: ['M16 16V3M16 16l11-6M16 16l11 8M16 16l-4 12M16 16L5 24M16 16L5 10', 'M16 8l7 3l3 6l-4 6H12l-4-6l3-6Z'],
+  leaf: ['M6 26C6 12 14 6 27 5c0 13-6 21-18 21', 'M6 26L18 14'],
+  fence: ['M4 26V10l3-3l3 3v16M13 26V10l3-3l3 3v16M22 26V10l3-3l3 3v16', 'M2 15h28M2 21h28'],
+  roots: ['M16 4v10', 'M16 14c-4 3-8 4-11 10M16 14c0 5-1 9-3 14M16 14c4 3 8 4 11 10M16 14c0 5 1 9 3 14'],
+  mountain: ['M2 27l10-17l5 8l4-6l9 15Z'],
+  feather: ['M6 28C8 16 16 6 28 4c0 12-6 20-16 22', 'M6 28L22 12', 'M12 22h6M15 18h6'],
+};
+const kindLabel: Record<StopKind, string> = { stone: '', gate: 'A fixed check', wind: 'A model idea' };
+const used = new Set(n.lanes.flatMap((l) => l.stops.map((s) => s.kind ?? 'stone')));
+const pct = (k: number, t: number) => Math.round((k / t) * 100);
+---
+
+{
+  part === 'trail' && (
+    <div class="notes">
+      <p class="mono ttl">{n.title}</p>
+      <p class="lede">{n.lede}</p>
+
+      {n.lanes.map((lane) => (
+        <div class="lane">
+          {lane.label && (
+            <p class="mono lane-h">
+              <span>{lane.label}</span>
+              {lane.note && <em>{lane.note}</em>}
+            </p>
+          )}
+          <ol class="trail" style={`--n:${lane.stops.length}`}>
+            {lane.stops.map((s, i) => (
+              <li class={`stop k-${s.kind ?? 'stone'}`} style={`--i:${i}`}>
+                <span class="mark" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    {glyphs[s.icon].map((d) => <path d={d} />)}
+                  </svg>
+                  <b>{i + 1}</b>
+                </span>
+                <h5 class="serif">{s.title}</h5>
+                <p>{s.text}</p>
+                {s.kind && s.kind !== 'stone' && <span class="mono tag">{kindLabel[s.kind]}</span>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+
+      {(used.has('gate') || used.has('wind')) && (
+        <ul class="mono legend" aria-label="Legend">
+          {used.has('gate') && <li class="k-gate"><i aria-hidden="true" />Gate: a fixed check that only ever says yes or no</li>}
+          {used.has('wind') && <li class="k-wind"><i aria-hidden="true" />Wind: the model’s idea, never trusted on its own</li>}
+        </ul>
+      )}
+
+      {n.gauge && (
+        <div class="gauge">
+          <p class="serif g-h">{n.gauge.label}</p>
+          <div class="g-scale" role="img" aria-label={`${n.gauge.label}, on a scale from 0.5, a coin flip, to 1.0, perfect`}>
+            <span class="g-mark" style={`--at:${((n.gauge.value - 0.5) / 0.5) * 100}%`} />
+          </div>
+          <div class="mono g-ends"><span>0.5 · a coin flip</span><span>1.0 · perfect</span></div>
+          <p class="g-t">{n.gauge.text}</p>
+        </div>
+      )}
+
+      {n.asides && (
+        <ul class="asides">
+          {n.asides.map((a) => (
+            <li>
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                {glyphs[a.icon].map((d) => <path d={d} />)}
+              </svg>
+              <div>
+                <p class="serif a-h">{a.label}</p>
+                <p class="a-t">{a.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <p class="mono checked">{n.checked}</p>
+    </div>
+  )
+}
+
+{
+  part === 'numbers' && n.numbers && (
+    <div class="notes nums">
+      <p class="mono ttl">{n.numbers.title}</p>
+      {n.numbers.groups.map((g) => (
+        <div class="grp">
+          <p class="mono g-label">{g.label}</p>
+          <ul class="stems">
+            {g.rows.map((r, i) => (
+              <li class={`tone-${r.tone ?? 'main'}`} style={`--i:${i}`}>
+                <span class="s-name">{r.label}</span>
+                <span class="s-track" role="img" aria-label={`${r.k} of ${r.n}`}>
+                  <span class="s-fill" style={`--w:${pct(r.k, r.n)}%`} />
+                </span>
+                <span class="mono s-val">{r.k}/{r.n}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      <ul class="caveats">
+        {n.numbers.caveats.map((c) => <li>{c}</li>)}
+      </ul>
+      <p class="mono checked">{n.checked}</p>
+    </div>
+  )
+}
+
+<style is:global>
+  .notes {
+    --line: color-mix(in srgb, var(--ink) 22%, transparent);
+    padding: 0.25rem 0 1.5rem;
+    color: var(--ink);
+  }
+  .notes .ttl {
+    margin: 0;
+    color: var(--ochre);
+  }
+  :root[data-theme='night'] .notes .ttl {
+    color: var(--straw);
+  }
+  .notes .lede {
+    margin: 0.4rem 0 1.75rem;
+    max-width: 58ch;
+    font: 300 clamp(1.2rem, 2.2vw, 1.55rem) / 1.35 var(--serif);
+  }
+  .notes .lane + .lane {
+    margin-top: 2.25rem;
+  }
+  .notes .lane-h {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1rem;
+    margin: 0 0 1rem;
+    color: var(--ink);
+  }
+  .notes .lane-h em {
+    font-style: normal;
+    color: var(--ink-soft);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  /* the trail: stones along a wandering path */
+  .notes .trail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: 0 1rem;
+  }
+  .notes .stop {
+    position: relative;
+    padding: 0 0.25rem 0.5rem;
+    text-align: center;
+  }
+  .notes .stop::before {
+    content: '';
+    position: absolute;
+    top: 2.1rem;
+    right: calc(50% + 2.4rem);
+    width: calc(100% - 4.8rem + 1rem);
+    height: 12px;
+    background: color-mix(in srgb, var(--ochre) 55%, transparent);
+    -webkit-mask: var(--wave) repeat-x center / 36px 12px;
+    mask: var(--wave) repeat-x center / 36px 12px;
+  }
+  .notes .stop:first-child::before {
+    display: none;
+  }
+  .notes .mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 4.2rem;
+    height: 4.2rem;
+    margin: 0 auto 0.9rem;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--paper-2) 80%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    border-radius: 54% 46% 50% 50% / 52% 48% 52% 48%;
+    transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  }
+  .notes .stop:nth-child(2n) .mark {
+    border-radius: 46% 54% 48% 52% / 50% 52% 48% 50%;
+  }
+  .notes .mark svg {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+  .notes .mark b {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.35rem;
+    display: grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    font: 600 0.7rem var(--mono);
+    color: var(--paper);
+    background: var(--ochre);
+  }
+  :root[data-theme='night'] .notes .mark b {
+    background: var(--straw);
+    color: var(--umber);
+  }
+  .notes .k-gate .mark {
+    border-radius: 999px 999px 10px 10px;
+    border-color: var(--ochre);
+    background: color-mix(in srgb, var(--straw) 24%, transparent);
+  }
+  .notes .k-wind .mark {
+    border-style: dashed;
+    border-color: color-mix(in srgb, var(--olive) 90%, transparent);
+    background: color-mix(in srgb, var(--olive) 14%, transparent);
+  }
+  .notes .stop h5 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+  .notes .stop p {
+    margin: 0.4rem auto 0;
+    max-width: 22ch;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .notes .tag {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.6rem;
+    color: var(--ochre);
+  }
+  :root[data-theme='night'] .notes .tag {
+    color: var(--straw);
+  }
+  .notes .k-wind .tag {
+    color: var(--olive);
+  }
+  @media (hover: hover) {
+    .notes .stop:hover .mark {
+      transform: translateY(-4px) rotate(-3deg);
+      box-shadow: 0 16px 24px -16px rgb(138 93 20 / 0.7);
+    }
+  }
+  .notes .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--ink-soft);
+    font-size: 0.66rem;
+    text-transform: none;
+    letter-spacing: 0.03em;
+  }
+  .notes .legend i {
+    display: inline-block;
+    width: 1.1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    vertical-align: -0.2rem;
+    border: 1.5px solid var(--ochre);
+    background: color-mix(in srgb, var(--straw) 24%, transparent);
+    border-radius: 999px 999px 3px 3px;
+  }
+  .notes .legend .k-wind i {
+    border-style: dashed;
+    border-color: var(--olive);
+    background: color-mix(in srgb, var(--olive) 14%, transparent);
+    border-radius: 50%;
+  }
+
+  .notes .asides {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+  .notes .asides li {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 14px 14px 14px 4px;
+    background: color-mix(in srgb, var(--paper-2) 55%, transparent);
+  }
+  .notes .asides svg {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    color: var(--ochre);
+  }
+  :root[data-theme='night'] .notes .asides svg {
+    color: var(--straw);
+  }
+  .notes .asides p {
+    margin: 0;
+  }
+  .notes .a-h {
+    font-size: 1.05rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .notes .a-t {
+    margin-top: 0.3rem !important;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .notes .checked {
+    margin: 1.75rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.64rem;
+    text-transform: none;
+    letter-spacing: 0.03em;
+  }
+  .notes .checked::before {
+    content: '✓ Checked against ';
+  }
+
+  /* the coin-flip scale */
+  .notes .gauge {
+    margin-top: 2rem;
+    padding: 1.4rem 1.5rem 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 14px 14px 14px 4px;
+    background: color-mix(in srgb, var(--paper-2) 55%, transparent);
+  }
+  .notes .g-h {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
+  .notes .g-scale {
+    position: relative;
+    height: 0.9rem;
+    margin: 2rem 0 0.5rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 22%, transparent), color-mix(in srgb, var(--olive) 70%, transparent));
+  }
+  .notes .g-mark {
+    position: absolute;
+    left: var(--at);
+    top: -0.5rem;
+    width: 4px;
+    height: 1.9rem;
+    transform: translateX(-50%);
+    background: var(--ochre);
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgb(212 165 58 / 0.8);
+  }
+  .notes .g-ends {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ink-soft);
+    font-size: 0.62rem;
+  }
+  .notes .g-t {
+    margin: 1rem 0 0;
+    max-width: 60ch;
+    color: var(--ink-soft);
+  }
+
+  /* the numbers, as stems growing from the soil */
+  .notes.nums .grp {
+    margin-top: 1.5rem;
+  }
+  .notes .g-label {
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+  }
+  .notes .stems {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .notes .stems li {
+    display: grid;
+    grid-template-columns: minmax(8rem, 13rem) 1fr 4.5rem;
+    align-items: center;
+    gap: 0.9rem;
+    padding-block: 0.35rem;
+  }
+  .notes .s-name {
+    font-size: 0.95rem;
+  }
+  .notes .s-track {
+    display: block;
+    position: relative;
+    height: 0.7rem;
+    border-bottom: 2px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  }
+  .notes .s-fill {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 0.7rem;
+    width: var(--w);
+    min-width: 0.4rem;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--olive), var(--straw));
+  }
+  .notes .tone-base .s-fill {
+    background: color-mix(in srgb, var(--ink) 38%, transparent);
+  }
+  .notes .tone-dim .s-fill {
+    background: color-mix(in srgb, var(--olive) 55%, transparent);
+  }
+  .notes .s-val {
+    text-align: right;
+    color: var(--ink-soft);
+    text-transform: none;
+  }
+  .notes .caveats {
+    margin: 1.75rem 0 0;
+    padding: 0 0 0 1.1rem;
+    display: grid;
+    gap: 0.6rem;
+    max-width: 70ch;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+
+  /* small screens: the trail runs down the page */
+  @media (max-width: 760px) {
+    .notes .trail {
+      grid-template-columns: 1fr;
+    }
+    .notes .stop {
+      display: grid;
+      grid-template-columns: 4.2rem 1fr;
+      column-gap: 1rem;
+      text-align: left;
+      padding-bottom: 1.4rem;
+    }
+    .notes .stop::before {
+      top: 4.4rem;
+      bottom: -0.2rem;
+      left: 2.1rem;
+      right: auto;
+      width: 12px;
+      height: auto;
+      transform: translateX(-50%);
+      -webkit-mask: var(--wave-v) repeat-y center / 12px 36px;
+      mask: var(--wave-v) repeat-y center / 12px 36px;
+    }
+    .notes .stop:first-child::before {
+      display: block;
+    }
+    .notes .stop:last-child::before {
+      display: none;
+    }
+    .notes .mark {
+      grid-row: 1 / span 3;
+      margin: 0;
+    }
+    .notes .stop p {
+      margin-inline: 0;
+      max-width: none;
+    }
+    .notes .stems li {
+      grid-template-columns: 1fr 4.5rem;
+    }
+    .notes .s-track {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js .notes .stop {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    .js details[open] .notes .stop {
+      animation: stop-in 0.7s var(--ease) both;
+      animation-delay: calc(var(--i) * 110ms + 100ms);
+    }
+    @keyframes stop-in {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    .js .notes .s-fill {
+      width: 0;
+    }
+    .js details[open] .notes .s-fill {
+      animation: stem-grow 1.2s var(--ease) both;
+      animation-delay: calc(var(--i) * 140ms + 200ms);
+    }
+    @keyframes stem-grow {
+      to {
+        width: var(--w);
+      }
+    }
+  }
+</style>

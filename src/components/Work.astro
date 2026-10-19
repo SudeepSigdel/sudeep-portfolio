@@ -1,13 +1,19 @@
 ---
+import Motif from './Motif.astro';
+import FieldNotes from './FieldNotes.astro';
+import Sprig from './Sprig.astro';
 import { featured, earlier, type Project } from '../data/site';
+import { notes } from '../data/trails';
 
-// Generated figures (scripts/assets/*), inlined so they inherit the site's fonts.
-const svgs = import.meta.glob('../assets/projects/*/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
-function figureSvg(key: string): string {
-  const svg = svgs[`../assets/projects/${key}.svg`];
-  if (!svg) throw new Error(`Missing figure: src/assets/projects/${key}.svg`);
-  return svg;
-}
+const motifs: Record<string, 'wheat' | 'pass' | 'rings' | 'river' | 'lantern' | 'web' | 'feather'> = {
+  RestaurantMS: 'wheat',
+  Janus: 'pass',
+  AegisWeb: 'rings',
+  'NEPSE Signal Desk': 'river',
+  CrisisCare: 'lantern',
+  WebGuard: 'web',
+  HumanSign: 'feather',
+};
 
 const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[] = [
   { label: 'Selected work', tier: 'featured', items: featured },
@@ -15,9 +21,9 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
 ];
 ---
 
-<section id="work" class="section" aria-labelledby="work-h">
+<section id="work" class="section on-light edge-grass" aria-labelledby="work-h">
   <div class="wrap">
-    <p class="mono muted reveal">02 / Work</p>
+    <p class="mono muted eyebrow reveal"><Sprig />03 / Work</p>
     <h2 id="work-h" class="serif reveal">What I've been building.</h2>
 
     {
@@ -29,12 +35,23 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
               <li class="reveal">
                 <hr class="rule" />
                 <article class="row">
-                  <span class="mono idx">{p.index}</span>
+                  <div class="plate-motif" aria-hidden="true">
+                    <div class="frame">
+                      <Motif kind={motifs[p.title]} />
+                    </div>
+                    <span class="mono idx">{p.index}</span>
+                  </div>
                   <div class="main">
                     <h4 class="serif">{p.title}</h4>
                     <p class="mono muted kicker">{p.kicker}</p>
+                    {p.quip && <p class="quip">{p.quip}</p>}
                     <p class="sum">{p.summary}</p>
                     {p.detail && <p class="sum muted">{p.detail}</p>}
+                    <ul class="mono tags" aria-label={`${p.title} stack`}>
+                      {p.stack.map((s) => (
+                        <li>{s}</li>
+                      ))}
+                    </ul>
                     {p.href && (
                       <p class="link">
                         <a href={p.href} target="_blank" rel="noopener noreferrer">
@@ -45,34 +62,24 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
                       </p>
                     )}
                   </div>
-                  <ul class="mono tags" aria-label={`${p.title} stack`}>
-                    {p.stack.map((s) => (
-                      <li>{s}</li>
-                    ))}
-                  </ul>
-                  {p.figures && (
-                    <div class="figs">
-                      {p.figures.map((f, i) => (
-                        <details class="fig" open={i === 0}>
-                          <summary class="mono">
-                            <span class="fig-label">{f.label}</span>
-                            <span class="fig-toggle" aria-hidden="true" />
-                          </summary>
-                          <figure>
-                            <p class="mono muted hint" aria-hidden="true">Scroll sideways →</p>
-                            <div
-                              class="plate"
-                              role="region"
-                              tabindex="0"
-                              aria-label={`${p.title}: ${f.label}. Scrolls sideways on narrow screens.`}
-                              set:html={figureSvg(f.key)}
-                            />
-                            <figcaption class="mono muted">{f.caption}</figcaption>
-                          </figure>
-                        </details>
-                      ))}
-                    </div>
-                  )}
+                  <div class="figs">
+                    <details class="fig">
+                      <summary class="mono">
+                        <span class="fig-label">Field notes · how it works</span>
+                        <span class="fig-toggle" aria-hidden="true" />
+                      </summary>
+                      <FieldNotes project={p.title} />
+                    </details>
+                    {notes[p.title].numbers && (
+                      <details class="fig">
+                        <summary class="mono">
+                          <span class="fig-label">Field notes · the numbers</span>
+                          <span class="fig-toggle" aria-hidden="true" />
+                        </summary>
+                        <FieldNotes project={p.title} part="numbers" />
+                      </details>
+                    )}
+                  </div>
                 </article>
               </li>
             ))}
@@ -102,19 +109,38 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
   }
   .row {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
     padding-block: 2.25rem 2.75rem;
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* an arched window onto a small drawing of the natural world */
+  .plate-motif {
+    position: relative;
+    max-width: 15rem;
+  }
+  .frame {
+    padding: 2.2rem 1.1rem 1.2rem;
+    aspect-ratio: 4 / 5;
+    display: grid;
+    align-items: center;
+    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+    border-radius: 999px 999px 12px 12px;
+    background:
+      radial-gradient(ellipse 80% 55% at 50% 100%, rgb(212 165 58 / 0.3), transparent 72%),
+      color-mix(in srgb, var(--paper-2) 70%, transparent);
+    transition: transform 0.7s var(--ease), box-shadow 0.7s var(--ease);
+  }
   .idx {
+    position: absolute;
+    top: 0.9rem;
+    left: 50%;
+    transform: translateX(-50%);
     color: var(--ink-soft);
-    padding-top: 0.6rem;
-    transition: color 0.5s var(--ease);
   }
   h4 {
     margin: 0;
     font-size: clamp(1.75rem, 3.4vw, 2.75rem);
-    transition: transform 0.6s var(--ease);
   }
   .featured h4 {
     font-size: clamp(2.25rem, 5vw, 4rem);
@@ -125,6 +151,14 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
   .kicker {
     margin: 0.75rem 0 1.5rem;
   }
+  .quip {
+    margin: -0.9rem 0 1.4rem;
+    font: italic 300 1.15rem/1.3 var(--serif);
+    color: var(--ochre);
+  }
+  :global(:root[data-theme='night']) .quip {
+    color: var(--straw);
+  }
   .sum {
     margin: 0 0 0.85rem;
     max-width: 58ch;
@@ -132,18 +166,49 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
   .featured .sum:first-of-type {
     font-size: 1.125em;
   }
+
+  /* stack: smooth pebbles, each a little different */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    list-style: none;
+    margin: 1.4rem 0 0;
+    padding: 0;
+  }
+  .tags li {
+    padding: 0.4rem 0.95rem;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--straw) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ochre) 35%, transparent);
+    border-radius: 58% 42% 52% 48% / 55% 50% 50% 45%;
+    transition: transform 0.4s var(--ease), background-color 0.4s var(--ease);
+  }
+  .tags li:nth-child(2n) {
+    border-radius: 45% 55% 42% 58% / 50% 45% 55% 50%;
+  }
+  .tags li:nth-child(3n) {
+    border-radius: 52% 48% 60% 40% / 45% 58% 42% 55%;
+  }
+  @media (hover: hover) {
+    .tags li:hover {
+      transform: translateY(-3px) rotate(-2deg);
+      background: color-mix(in srgb, var(--straw) 38%, transparent);
+    }
+    .row:hover .frame {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 36px -26px rgb(138 93 20 / 0.7);
+    }
+  }
+
   .figs {
     grid-column: 1 / -1;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
     display: grid;
-    gap: 1rem;
+    gap: 0.5rem;
     min-width: 0;
   }
   .fig,
-  .fig figure {
-    min-width: 0;
-    max-width: 100%;
-  }
   .fig {
     border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
   }
@@ -166,35 +231,6 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
   .fig[open] .fig-toggle::before {
     content: '\2212';
   }
-  .fig figure {
-    margin: 0 0 1rem;
-  }
-  .hint {
-    margin: 0 0 0.5rem;
-  }
-  @media (min-width: 1200px) {
-    .hint {
-      display: none;
-    }
-  }
-  .plate {
-    max-width: 100%;
-    overflow-x: auto;
-    background: var(--forest);
-    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
-  }
-  .plate :global(svg) {
-    display: block;
-    width: 100%;
-    min-width: 1080px;
-    height: auto;
-  }
-  figcaption {
-    margin-top: 0.75rem;
-    max-width: 90ch;
-    text-transform: none;
-    letter-spacing: 0.02em;
-  }
   .link {
     margin: 1.25rem 0 0;
     font-family: var(--mono);
@@ -205,22 +241,12 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
     display: inline-block;
     padding-block: 0.5rem;
     text-decoration: none;
-    background: linear-gradient(var(--forest), var(--forest)) 0 calc(100% - 0.35rem) / 100% 1px no-repeat;
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.35rem) / 100% 1px no-repeat;
     transition: background-size 0.5s var(--ease);
   }
   .link a:hover,
   .link a:focus-visible {
     background-size: 0 1px;
-  }
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.25rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    color: var(--ink-soft);
-    align-content: start;
   }
   .sr {
     position: absolute;
@@ -230,31 +256,37 @@ const groups: { label: string; tier: 'featured' | 'earlier'; items: Project[] }[
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  @media (hover: hover) {
-    .row:hover .idx {
-      color: var(--ink);
-    }
-    .row:hover h4 {
-      transform: translateX(0.35rem);
-    }
-  }
   @media (min-width: 900px) {
-    .figs {
-      grid-column: 2 / -1;
-    }
     .row {
-      grid-template-columns: 4rem minmax(0, 1fr) 14rem;
-      gap: 2rem;
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 3rem;
     }
-    .tags {
-      flex-direction: column;
-      gap: 0.35rem;
-      padding-top: 0.75rem;
+    .plate-motif {
+      grid-column: 1;
+      grid-row: 1;
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .row:hover h4 {
-      transform: none;
+    .main {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .featured li:nth-child(even) .row {
+      grid-template-columns: minmax(0, 1fr) 15rem;
+    }
+    .featured li:nth-child(even) .plate-motif {
+      grid-column: 2;
+    }
+    .featured li:nth-child(even) .main {
+      grid-column: 1;
+    }
+    .figs {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .earlier .plate-motif {
+      max-width: 11rem;
+    }
+    .earlier .row {
+      grid-template-columns: 11rem minmax(0, 1fr);
     }
   }
 </style>

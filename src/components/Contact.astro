@@ -1,93 +1,45 @@
 ---
-import { Image } from 'astro:assets';
-import ridge from '../assets/landscapes/closing-ridge.jpg';
-import fog from '../assets/ambient/fog.webp';
+import Sprig from './Sprig.astro';
 import { site } from '../data/site';
 ---
 
-<section id="contact" class="contact" aria-labelledby="contact-h" data-ambient>
-  <Image
-    class="bg"
-    src={ridge}
-    alt="Three small hikers cross a green mountain slope while cloud drifts through the valley behind them."
-    widths={[900, 1600, 2400]}
-    sizes="100vw"
-    loading="lazy"
-    quality={85}
-  />
-  <div class="mist" aria-hidden="true">
-    <img class="fog f1" src={fog.src} width={fog.width} height={fog.height} alt="" decoding="async" loading="lazy" />
-    <img class="fog f2" src={fog.src} width={fog.width} height={fog.height} alt="" decoding="async" loading="lazy" />
-  </div>
+<section id="contact" class="contact" aria-labelledby="contact-h" data-meadow-view data-meadow-dusk>
   <div class="veil" aria-hidden="true"></div>
   <div class="wrap copy reveal">
-    <p class="mono">04 / Contact</p>
+    <p class="mono eyebrow"><Sprig />05 / Contact</p>
     <h2 id="contact-h" class="serif">Let's build something careful.</h2>
     <p class="mail"><a href={`mailto:${site.email}`}>{site.email}</a></p>
+    <p class="joke">No data pack required, unlike my Clash of Clans years.</p>
     <ul class="mono links">
       <li><a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a></li>
       <li><a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
       <li><a href={site.cv} download>Résumé (PDF)</a></li>
     </ul>
   </div>
+  <div class="flies" data-flies aria-hidden="true"></div>
 </section>
 
 <style>
   .contact {
     position: relative;
-    min-height: 90svh;
+    z-index: 1;
+    min-height: 100svh;
     display: grid;
-    align-items: center;
-    color: var(--cloud);
-    overflow: hidden;
-    isolation: isolate;
-    background: var(--forest);
-    padding-block: var(--section-y);
+    align-items: start;
+    color: var(--parchment);
+    padding-block: var(--section-y) 4rem;
   }
-  .bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 60% 78%;
-    z-index: -2;
-  }
+  /* The sky at dusk is dark overhead and bright at the horizon: keep the copy in the dark, let the grass stay clear */
   .veil {
     position: absolute;
     inset: 0;
-    z-index: -1;
-    /* The fog is bright: tone it down behind the copy (top-left) and keep the hikers clear */
     background:
-      linear-gradient(to bottom, rgb(15 34 24 / 0.78), rgb(15 34 24 / 0.5) 45%, rgb(15 34 24 / 0.08) 70%),
-      linear-gradient(95deg, rgb(15 34 24 / 0.55), transparent 65%);
-  }
-  .mist {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    overflow: hidden;
+      linear-gradient(to bottom, rgb(26 23 13 / 0.72), rgb(26 23 13 / 0.45) 38%, transparent 62%),
+      linear-gradient(95deg, rgb(26 23 13 / 0.4), transparent 60%);
     pointer-events: none;
   }
-  .fog {
-    position: absolute;
-    height: auto;
-    max-width: none;
-    opacity: 0.3;
-  }
-  .f1 {
-    top: 12%;
-    left: -20%;
-    width: min(120vw, 1900px);
-  }
-  .f2 {
-    top: 30%;
-    right: -30%;
-    width: min(90vw, 1400px);
-    opacity: 0.22;
-  }
   .copy {
-    align-self: start;
+    position: relative;
   }
   h2 {
     margin: 1.5rem 0 2rem;
@@ -98,6 +50,12 @@ import { site } from '../data/site';
     margin: 0 0 2.5rem;
     font-size: clamp(1.1rem, 2vw, 1.5rem);
     overflow-wrap: anywhere;
+  }
+  .joke {
+    margin: -1.5rem 0 2.25rem;
+    font-style: italic;
+    opacity: 0.8;
+    max-width: 42ch;
   }
   .links {
     display: flex;
@@ -111,43 +69,112 @@ import { site } from '../data/site';
     display: inline-block;
     padding-block: 0.6rem;
   }
+</style>
 
-  @media (prefers-reduced-motion: no-preference) {
-    .bg {
-      animation: breathe 60s ease-in-out infinite alternate;
-    }
-    .f1 {
-      animation: mist-r 120s ease-in-out infinite alternate;
-    }
-    .f2 {
-      animation: mist-l 160s ease-in-out infinite alternate;
-    }
-    [data-ambient][data-offscreen] * {
-      animation-play-state: paused;
-    }
-    @keyframes breathe {
-      from {
-        transform: scale(1);
-      }
-      to {
-        transform: scale(1.05) translate3d(0.8%, -0.6%, 0);
-      }
-    }
-    @keyframes mist-r {
-      from {
-        transform: translate3d(-3%, 0, 0);
-      }
-      to {
-        transform: translate3d(12%, 3%, 0);
-      }
-    }
-    @keyframes mist-l {
-      from {
-        transform: translate3d(3%, 0, 0);
-      }
-      to {
-        transform: translate3d(-14%, -3%, 0);
-      }
-    }
+<style is:global>
+  /* fireflies live inside the contact section only and are clipped to it */
+  .flies {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .fly {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: #fff1a8;
+    box-shadow: 0 0 6px 2px rgb(255 230 120 / 0.85), 0 0 18px 6px rgb(255 214 90 / 0.3);
+    opacity: 0;
+    will-change: transform, opacity;
   }
 </style>
+
+<script>
+  // Fireflies wander over the grass, each on its own slow, curving path, blinking on and off with its own rhythm.
+  // They are made only while the contact section is on screen and live inside it, so nothing strays onto other sections.
+  const section = document.querySelector<HTMLElement>('#contact');
+  const layer = document.querySelector<HTMLElement>('[data-flies]');
+  const ok = window.matchMedia('(prefers-reduced-motion: no-preference)');
+  const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+  const MAX = 9;
+  let timer = 0;
+  let count = 0;
+  let visible = false;
+
+  function spawn() {
+    if (!layer || !visible || count >= MAX) return;
+    const w = layer.clientWidth;
+    const h = layer.clientHeight;
+    const el = document.createElement('span');
+    el.className = 'fly';
+    const size = rnd(3.5, 6);
+    el.style.width = el.style.height = `${size}px`;
+    el.style.margin = `${-size / 2}px 0 0 ${-size / 2}px`;
+    layer.append(el);
+    count++;
+
+    // a meandering path: a handful of waypoints, each a short, slightly random hop from the last, lower part of the section favoured
+    let x = rnd(0.04, 0.96) * w;
+    let y = rnd(0.45, 0.95) * h;
+    let heading = rnd(0, Math.PI * 2);
+    const steps = Math.round(rnd(7, 12));
+    const path: Keyframe[] = [];
+    for (let i = 0; i <= steps; i++) {
+      path.push({ transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)` });
+      heading += rnd(-1.1, 1.1);
+      const hop = rnd(25, 80);
+      x = Math.min(Math.max(x + Math.cos(heading) * hop, 0), w);
+      y = Math.min(Math.max(y + Math.sin(heading) * hop * 0.6 - 4, h * 0.3), h * 0.97);
+    }
+    const life = rnd(14000, 26000);
+    const move = el.animate(path, { duration: life, easing: 'ease-in-out', fill: 'forwards' });
+
+    // blink: glow up, hold a moment, fade, wait in the dark; the dark gap is longer than the lit part
+    const lit = rnd(900, 1800);
+    const dark = rnd(1400, 4200);
+    const cycle = lit + dark;
+    const blink = el.animate(
+      [
+        { opacity: 0, offset: 0 },
+        { opacity: 1, offset: (lit * 0.3) / cycle },
+        { opacity: 0.85, offset: (lit * 0.6) / cycle },
+        { opacity: 0, offset: lit / cycle },
+        { opacity: 0, offset: 1 },
+      ],
+      { duration: cycle, iterations: Math.ceil(life / cycle) + 1, delay: rnd(0, 2500), easing: 'ease-in-out' },
+    );
+    const end = () => {
+      move.cancel();
+      blink.cancel();
+      el.remove();
+      count--;
+    };
+    move.onfinish = end;
+  }
+
+  function schedule() {
+    timer = window.setTimeout(() => {
+      if (visible) spawn();
+      schedule();
+    }, rnd(700, 3800));
+  }
+
+  if (section && layer) {
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting && ok.matches;
+      clearTimeout(timer);
+      if (visible) {
+        const first = Math.round(rnd(2, 4));
+        for (let i = 0; i < first; i++) window.setTimeout(spawn, i * rnd(300, 1400));
+        schedule();
+      } else {
+        layer.replaceChildren();
+        count = 0;
+      }
+    }, { threshold: 0.15 }).observe(section);
+  }
+</script>

@@ -10,16 +10,6 @@ export const site = {
   cv: '/Sudeep_Sigdel_CV.pdf',
 };
 
-/**
- * A generated figure from src/assets/projects/<key>.svg (see scripts/assets/). Real structure,
- * measured results or screenshots only: never mock-ups.
- */
-export type ProjectFigure = {
-  key: string;
-  label: string;
-  caption: string;
-};
-
 export type Project = {
   index: string;
   title: string;
@@ -27,9 +17,10 @@ export type Project = {
   summary: string;
   detail?: string;
   stack: string[];
+  /** A small joke under the kicker. */
+  quip?: string;
   href?: string;
   hrefLabel?: string;
-  figures?: ProjectFigure[];
 };
 
 export const featured: Project[] = [
@@ -37,52 +28,31 @@ export const featured: Project[] = [
     index: '01',
     title: 'RestaurantMS',
     kicker: 'Technest Innovation · internship · in production',
+    quip: 'Where “one more momo” becomes a row in a database.',
     summary:
       'Multi-tenant restaurant and lodge management: orders, kitchen, billing, reservations, payroll and reporting, mobile-first for waiters on the floor and desktop-first for managers.',
     detail:
-      'A team product that I have worked on since joining as an intern in August. Permissions and tenant scoping are enforced on the server, and live updates are sent as invalidation signals over WebSockets so the client always re-reads from the API.',
+      'A team product that I have worked on since joining as an intern in August. Permissions and tenant scoping are enforced on the server, and live updates are sent as invalidation signals over WebSockets so the client always re-reads from the API. A mobile client (Expo) was started in October.',
     stack: ['Django', 'DRF', 'Channels', 'PostgreSQL', 'Redis', 'Next.js', 'Docker'],
-    figures: [
-      {
-        key: 'restaurantms/architecture',
-        label: 'Architecture',
-        caption: 'Structure only, drawn from the repository’s own docs, settings and Compose files.',
-      },
-    ],
   },
   {
     index: '02',
     title: 'Janus',
     kicker: 'Safety-first browser agent · in development',
+    quip: 'A browser agent with trust issues, on purpose.',
     summary:
-      'A browser agent for Nepali, Hindi and bilingual portals. A local model proposes a typed plan; deterministic code validates and authorizes every step before anything touches the page.',
+      'A browser agent for Nepali, Hindi and English portals. A local model proposes a typed plan; deterministic code validates and authorizes every step before anything touches the page, and risky steps wait for your approval.',
     detail:
-      'Measured against an open baseline on fictional replica sites: 72 of 87 development runs against the baseline’s 40, and 24 of 36 on a held-out split for an earlier version. A security suite also finds it can be hijacked through pre-filled form fields, and that result is published alongside the good ones.',
+      'On fictional replica portals it completes 114 of 141 development runs and 33 of 45 on a held-out split. On the older split it did 72 of 87 against a baseline’s 40, in about 13 seconds a task instead of about five minutes. Against 72 planted-instruction scenarios from WASP, no attack worked. It is weak where a task needs reading the page to decide (36 of 125 on MiniWoB++, 4 of 49 on WebGames), and a poisoned pre-filled field is a known gap, published alongside the good results.',
     stack: ['Python', 'Playwright', 'Ollama', 'uv'],
     href: 'https://github.com/SudeepSigdel/Janus',
     hrefLabel: 'github.com/SudeepSigdel/Janus',
-    figures: [
-      {
-        key: 'janus/architecture',
-        label: 'Architecture',
-        caption: 'The agent loop, from the Mermaid diagram in the repository’s docs, with module paths checked against the source.',
-      },
-      {
-        key: 'janus/results-by-site',
-        label: 'Results by site',
-        caption: 'Development split v1 and the held-out split. Janus was tuned on the development split; the baseline was not.',
-      },
-      {
-        key: 'janus/q5-injection',
-        label: 'Security results',
-        caption: 'Adaptive injection suite: attack success by category, including the 6 of 6 value-poisoning gap.',
-      },
-    ],
   },
   {
     index: '03',
     title: 'AegisWeb',
-    kicker: 'In-browser AI agent · team project',
+    kicker: 'In-browser AI agent · Codefest Chitwan 2026 · team project',
+    quip: 'Its model has no authority. Relatable.',
     summary:
       'A zero-trust browser agent that runs locally in Chrome. Page understanding and browser actions are separate pipelines; each proposed action is validated, re-checked against a fresh page snapshot and authorized before it runs.',
     detail:
@@ -90,13 +60,6 @@ export const featured: Project[] = [
     stack: ['TypeScript', 'React', 'WebLLM', 'Chrome MV3'],
     href: 'https://github.com/Codefest-chitwan-2026/Alpha-Intellects',
     hrefLabel: 'github.com/Codefest-chitwan-2026/Alpha-Intellects',
-    figures: [
-      {
-        key: 'aegisweb/architecture',
-        label: 'Architecture',
-        caption: 'Drawn from the source tree. One exception to the authorization gate, the mail-composer path, is marked on the diagram.',
-      },
-    ],
   },
 ];
 
@@ -105,6 +68,7 @@ export const earlier: Project[] = [
     index: '04',
     title: 'NEPSE Signal Desk',
     kicker: 'Final year project · live',
+    quip: 'Predicts the market about as well as I once predicted load-shedding.',
     summary:
       'A signal platform for the Nepal Stock Exchange: daily-scraped prices, XGBoost and Random Forest BUY and SELL classifiers evaluated with nine-fold walk-forward validation and a 20-day embargo, served through FastAPI to a React dashboard.',
     detail:
@@ -116,10 +80,13 @@ export const earlier: Project[] = [
   {
     index: '05',
     title: 'CrisisCare',
-    kicker: '36-hour hackathon',
+    kicker: '36-hour hackathon · CSITAN 2024 · revived',
+    quip: '36 hours, one backend, and a sleep schedule best not discussed.',
     summary:
-      'Backend for a real-time disaster relief coordination platform connecting citizens, volunteers and administrators. Built solo.',
-    stack: ['FastAPI', 'PostgreSQL', 'WebSockets', 'JWT'],
+      'Backend for a disaster relief platform that matches people who need help with nearby donated resources. Requests and offers carry locations, the nearest available match is chosen by distance, and volunteers confirm by email. Built solo in 36 hours at the CSITAN hackathon.',
+    detail:
+      'Revisited after the hackathon: the README notes that some hackathon-era modules were deprecated, so they were removed and errors fixed, including duplicate emails and user roles.',
+    stack: ['FastAPI', 'SQLModel', 'PostgreSQL', 'JWT', 'Mailjet'],
     href: 'https://crisis-care-vxqw.vercel.app',
     hrefLabel: 'crisis-care-vxqw.vercel.app',
   },
@@ -127,9 +94,21 @@ export const earlier: Project[] = [
     index: '06',
     title: 'WebGuard',
     kicker: 'Security tool',
+    quip: 'Politely breaks into your website so nobody impolite does.',
     summary:
-      'Web vulnerability scanner that crawls a site and tests forms and URL parameters for SQL injection, reflected XSS and missing CSRF protection.',
+      'A beginner-friendly web vulnerability scanner. It crawls a site, tests forms and URL parameters for SQL injection and reflected XSS, and flags POST forms that carry no CSRF token. It can log in first, to scan apps like DVWA, and stops a scan after 180 seconds with partial results.',
     stack: ['FastAPI', 'SQLModel', 'PostgreSQL'],
+  },
+  {
+    index: '07',
+    title: 'HumanSign',
+    kicker: 'Hult Prize · early 2026 · team project',
+    quip: 'Proof a human typed this. Typos included.',
+    summary:
+      'A Chrome extension that records how you type while you write, then seals the document with a signed proof. A FastAPI decoder checks the signature, confirms the document has not changed since it was sealed, and scores whether the typing rhythm looks human.',
+    stack: ['Python', 'FastAPI', 'Chrome MV3', 'JWS signatures'],
+    href: 'https://github.com/b0sc/humanSign',
+    hrefLabel: 'github.com/b0sc/humanSign',
   },
 ];
 

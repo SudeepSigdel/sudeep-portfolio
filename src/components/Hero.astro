@@ -1,34 +1,9 @@
 ---
-import { Image } from 'astro:assets';
-import meadow from '../assets/landscapes/hero-meadow.jpg';
-import cloudA from '../assets/ambient/cloud-a.webp';
-import cloudB from '../assets/ambient/cloud-b.webp';
-import cloudC from '../assets/ambient/cloud-c.webp';
 import { site } from '../data/site';
 ---
 
-<header class="hero" data-ambient>
-  <div class="layer" data-parallax>
-    <Image
-      class="bg"
-    src={meadow}
-    alt="A sunlit green hillside with a dirt path winding over the crest beneath a soft blue sky and scattered clouds."
-    widths={[900, 1600, 2400]}
-    sizes="100vw"
-    loading="eager"
-    fetchpriority="high"
-    quality={85}
-    />
-  </div>
-  <div class="ambient" aria-hidden="true">
-    <span class="glow"></span>
-    <img class="cloud c1" src={cloudA.src} width={cloudA.width} height={cloudA.height} alt="" decoding="async" />
-    <img class="cloud c2" src={cloudB.src} width={cloudB.width} height={cloudB.height} alt="" decoding="async" />
-    <img class="cloud c3" src={cloudC.src} width={cloudC.width} height={cloudC.height} alt="" decoding="async" />
-    <span class="shade"></span>
-  </div>
-  <div class="veil" aria-hidden="true"></div>
-  <div class="fade" aria-hidden="true"></div>
+<header class="hero" data-meadow-view>
+  <div class="shade" aria-hidden="true"></div>
 
   <div class="copy wrap" id="top">
     <p class="mono kicker">Backend engineer · Nepal</p>
@@ -36,164 +11,179 @@ import { site } from '../data/site';
     <p class="lede">
       I build APIs, ML-backed systems and browser agents that are careful about what they are allowed to do.
     </p>
+    <p class="actions">
+      <a class="btn primary mono" href="#work">Selected work <span aria-hidden="true">↓</span></a>
+      <a class="btn mono" href={site.github} target="_blank" rel="noopener noreferrer">
+        GitHub <span aria-hidden="true">↗</span><span class="sr">(opens in a new tab)</span>
+      </a>
+    </p>
   </div>
 
-  <p class="mono foot wrap">Intern at Technest Innovation · since August</p>
+  <button
+    class="cue mono"
+    type="button"
+    data-story-open
+    aria-label="Open my story: Beyond the Horizon, a short cinematic about my background and work"
+  >
+    <span class="star" aria-hidden="true">✦</span>
+    <span class="cue-text">Beyond the horizon <span class="cue-sub">· my story</span></span>
+  </button>
+
+  <p class="mono foot wrap">Still tempted to just reinstall Windows</p>
 </header>
 
 <style>
   .hero {
     position: relative;
+    z-index: 1;
     min-height: 100svh;
     display: grid;
     grid-template-rows: 1fr auto;
-    color: var(--cloud);
-    overflow: hidden;
-    background: var(--sky);
-    isolation: isolate;
+    color: var(--ink);
   }
-  .bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 85%;
-  }
-  .veil {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    /* Dark type sits on the pale sky, so the photo stays bright; only the very top is softened for the nav */
-    background: linear-gradient(to bottom, rgb(246 248 247 / 0.22), transparent 22%);
-  }
-  /* Meadow to treeline: the hero's bottom edge dissolves into the About section's --forest */
-  .fade {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: clamp(8rem, 22vh, 15rem);
-    z-index: -1;
-    background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(28 58 40 / 0.4) 45%,
-      rgb(28 58 40 / 0.85) 78%,
-      var(--forest)
-    );
-  }
-  .layer {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-  }
-  @media (min-width: 900px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    /* extra headroom so the parallax shift never exposes the hero background */
-    .layer {
-      inset: -16vh 0 0 0;
-      will-change: transform;
-    }
-  }
-  .ambient {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .glow {
-    position: absolute;
-    inset: -10% -10% auto auto;
-    width: 70%;
-    height: 70%;
-    background: radial-gradient(circle at 70% 25%, rgb(255 255 255 / 0.55), transparent 62%);
-    opacity: 0.55;
-  }
-  .cloud {
-    position: absolute;
-    height: auto;
-    opacity: 0.55;
-    max-width: none;
-  }
-  .c1 {
-    top: 2%;
-    left: -8%;
-    width: min(70vw, 1100px);
-  }
-  .c2 {
-    top: 22%;
-    right: -12%;
-    width: min(52vw, 800px);
-    opacity: 0.45;
-  }
-  .c3 {
-    top: 8%;
-    left: 44%;
-    width: min(34vw, 520px);
-    opacity: 0.4;
-  }
+  /* Only the lower edge is darkened, so the small caption reads over the grass; the sky stays untouched */
   .shade {
     position: absolute;
-    left: -45%;
-    bottom: 0;
-    width: 80%;
-    height: 38%;
-    background: radial-gradient(ellipse at 50% 65%, rgb(15 34 24 / 0.34), transparent 68%);
-    opacity: 0;
+    inset: auto 0 0 0;
+    height: 28%;
+    background: linear-gradient(to bottom, transparent, rgb(30 34 20 / 0.55));
+    pointer-events: none;
   }
   .copy {
-    color: var(--pine);
     align-self: start;
-    padding-top: clamp(6rem, 17vh, 10rem);
+    padding-top: clamp(6rem, 15vh, 9rem);
   }
   .kicker {
     margin: 0 0 1.25rem;
   }
   h1 {
     margin: 0;
-    font-size: clamp(3.25rem, 11vw, 9rem);
+    font-size: clamp(3rem, 9.5vw, 8rem);
     max-width: 10ch;
   }
   .lede {
     max-width: 34ch;
-    margin: 1.75rem 0 0;
+    margin: 1.5rem 0 0;
     font-size: clamp(1.05rem, 1.4vw, 1.25rem);
   }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0 0;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    text-decoration: none;
+    background: #f1e9d6;
+    color: #231e14;
+    border: 1px solid #231e14;
+    transition:
+      background-color 0.4s var(--ease),
+      color 0.4s var(--ease);
+  }
+  .btn.primary {
+    background: #1a170d;
+    color: #f1e9d6;
+    border-color: #1a170d;
+  }
+  .btn:hover {
+    background: var(--straw);
+    color: #1a170d;
+    border-color: #1a170d;
+  }
+  /* night: a pale moonlit button for the main action, a dark glass-free outline for the second */
+  :global([data-theme='night']) .btn {
+    background: rgb(10 13 11 / 0.6);
+    color: #e6e8de;
+    border-color: rgb(230 232 222 / 0.6);
+  }
+  :global([data-theme='night']) .btn.primary {
+    background: #e6e8de;
+    color: #0a0d0b;
+    border-color: #e6e8de;
+  }
+  :global([data-theme='night']) .btn:hover {
+    background: var(--straw);
+    color: #0a0d0b;
+    border-color: var(--straw);
+  }
+  /* the way into the story: a small lantern near the horizon, right of the copy, over the mountains */
+  .cue {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(7rem, 36vh, 20rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    color: #f6e4a8;
+    background: rgb(5 8 16 / 0.5);
+    border: 1px solid rgb(242 201 76 / 0.5);
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition:
+      background-color 0.4s var(--ease),
+      border-color 0.4s var(--ease);
+  }
+  .cue:hover {
+    background: rgb(5 8 16 / 0.72);
+    border-color: #f2c94c;
+  }
+  .cue:focus-visible {
+    outline: 2px solid #f2c94c;
+    outline-offset: 3px;
+  }
+  .star {
+    color: #f2c94c;
+    font-size: 0.95rem;
+  }
+  .cue-sub {
+    opacity: 0.7;
+  }
+  @media (max-width: 520px) {
+    .cue-sub {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .star {
+      animation: twinkle 3.6s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.35;
+      }
+    }
+  }
   .foot {
+    position: relative;
     margin-block: 0;
     padding-block: 1.75rem;
-    position: relative;
+    color: var(--parchment);
   }
-
-  @media (max-width: 760px) {
-    .bg {
-      object-position: 52% 100%;
-    }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    /* Photo: a slow breath, never a pan */
-    .bg {
-      animation: breathe 52s ease-in-out infinite alternate;
-    }
-    /* Clouds: drift in opposite directions at different speeds */
-    .c1 {
-      animation: drift-r 75s ease-in-out infinite alternate;
-    }
-    .c2 {
-      animation: drift-l 95s ease-in-out infinite alternate;
-    }
-    .c3 {
-      animation: drift-r 120s ease-in-out infinite alternate;
-    }
-    .glow {
-      animation: glow 14s ease-in-out infinite alternate;
-    }
-    /* A cloud's shadow crossing the hillside */
-    .shade {
-      animation: shade 54s linear infinite;
-    }
-    /* Headline arrives in three soft beats */
-    .copy > * {
+    .copy > *,
+    .foot {
       animation: rise 1.6s var(--ease) both;
     }
     .copy > :nth-child(1) {
@@ -205,60 +195,11 @@ import { site } from '../data/site';
     .copy > :nth-child(3) {
       animation-delay: 0.5s;
     }
+    .copy > :nth-child(4) {
+      animation-delay: 0.7s;
+    }
     .foot {
-      animation: rise 1.6s var(--ease) 0.9s both;
-    }
-    /* Off-screen: stop painting */
-    [data-ambient][data-offscreen] * {
-      animation-play-state: paused;
-    }
-    @keyframes breathe {
-      from {
-        transform: scale(1) translate3d(0, 0, 0);
-      }
-      to {
-        transform: scale(1.045) translate3d(-0.6%, -0.8%, 0);
-      }
-    }
-    @keyframes drift-r {
-      from {
-        transform: translate3d(-4%, 0, 0);
-      }
-      to {
-        transform: translate3d(14%, 2%, 0);
-      }
-    }
-    @keyframes drift-l {
-      from {
-        transform: translate3d(4%, 0, 0);
-      }
-      to {
-        transform: translate3d(-16%, -2%, 0);
-      }
-    }
-    @keyframes glow {
-      from {
-        opacity: 0.35;
-      }
-      to {
-        opacity: 0.7;
-      }
-    }
-    @keyframes shade {
-      0% {
-        opacity: 0;
-        transform: translate3d(0, 0, 0);
-      }
-      14% {
-        opacity: 1;
-      }
-      86% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translate3d(185%, 0, 0);
-      }
+      animation-delay: 0.9s;
     }
     @keyframes rise {
       from {
@@ -272,35 +213,3 @@ import { site } from '../data/site';
     }
   }
 </style>
-
-<script>
-  // Hero-only parallax: wide viewport, fine pointer, motion allowed. Disabled otherwise.
-  const layer = document.querySelector<HTMLElement>('[data-parallax]');
-  const mq = window.matchMedia(
-    '(min-width: 900px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
-  );
-  if (layer) {
-    let ticking = false;
-    const update = () => {
-      ticking = false;
-      layer.style.transform = `translate3d(0, ${Math.min(window.scrollY, window.innerHeight) * 0.14}px, 0)`;
-    };
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    };
-    const sync = () => {
-      if (mq.matches) {
-        window.addEventListener('scroll', onScroll, { passive: true });
-        update();
-      } else {
-        window.removeEventListener('scroll', onScroll);
-        layer.style.transform = '';
-      }
-    };
-    mq.addEventListener('change', sync);
-    sync();
-  }
-</script>

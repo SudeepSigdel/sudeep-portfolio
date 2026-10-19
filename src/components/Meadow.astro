@@ -1,0 +1,115 @@
+---
+// The living landscape behind the page: a fixed WebGL meadow (src/scripts/meadow). Hero and Contact are transparent and
+// show it; every other section is opaque and slides over it. Without WebGL the CSS fallback below is all you see.
+---
+
+<div class="meadow" aria-hidden="true" data-meadow>
+  <div class="fallback"></div>
+  <canvas class="gl"></canvas>
+  <div class="vignette"></div>
+</div>
+
+<style>
+  .meadow {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 100vh;
+    height: 100lvh; /* the large viewport: stays put while a mobile address bar slides away */
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #d8c8a5;
+  }
+  /* quiet cinematic edge: darkens the corners a touch so the eye stays on the field */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 58%, transparent 62%, rgb(26 23 13 / 0.2) 100%);
+  }
+  :global([data-theme='night']) .vignette {
+    background: radial-gradient(ellipse at 50% 58%, transparent 55%, rgb(5 7 6 / 0.45) 100%);
+  }
+  .gl,
+  .fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .gl {
+    opacity: 0;
+    transition: opacity 1.4s var(--ease);
+  }
+  :global(.meadow-ready) .gl {
+    opacity: 1;
+  }
+
+  /* Static stand-in: warm sky, hazy ridges, a golden field */
+  .fallback {
+    background:
+      linear-gradient(to bottom, #8fa6b5 0%, #aeb8b4 30%, #d8c8a5 52%, transparent 52.2%),
+      linear-gradient(to bottom, transparent 52%, #a8883a 53%, #777a3c 72%, #353d25 100%);
+  }
+  :global([data-theme='night']) .meadow {
+    background: #1a2230;
+  }
+  :global([data-theme='night']) .fallback {
+    background:
+      linear-gradient(to bottom, #060a16 0%, #0e1626 30%, #243142 52%, transparent 52.2%),
+      linear-gradient(to bottom, transparent 52%, #2c3a30 53%, #1e2a22 72%, #0b0f0c 100%);
+  }
+  :global([data-theme='night']) .fallback::before {
+    background: #2a3646;
+  }
+  :global([data-theme='night']) .fallback::after {
+    background: #1f2b2a;
+  }
+  .fallback::before,
+  .fallback::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 14%;
+    bottom: 47.5%;
+  }
+  .fallback::before {
+    background: #a3a88f;
+    opacity: 0.8;
+    clip-path: polygon(0 70%, 12% 45%, 30% 55%, 48% 25%, 66% 50%, 82% 30%, 100% 55%, 100% 100%, 0 100%);
+  }
+  .fallback::after {
+    background: #777d68;
+    height: 9%;
+    bottom: 46.5%;
+    clip-path: polygon(0 60%, 18% 30%, 40% 55%, 60% 20%, 80% 50%, 100% 35%, 100% 100%, 0 100%);
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-meadow]');
+  const canvas = root?.querySelector<HTMLCanvasElement>('canvas');
+  if (root && canvas) {
+    const start = () =>
+      import('../scripts/meadow')
+        .then((m) =>
+          m.startMeadow({
+            canvas,
+            views: Array.from(document.querySelectorAll('[data-meadow-view]')),
+            dusk: document.querySelector('[data-meadow-dusk]'),
+            onReady: () => document.documentElement.classList.add('meadow-ready'),
+            onFail: (reason: string) => {
+              console.warn('Meadow: using the static fallback.', reason);
+              document.documentElement.classList.remove('meadow-ready');
+            },
+          }),
+        )
+        .catch((e) => {
+          console.warn('Meadow: could not start.', e);
+          document.documentElement.classList.remove('meadow-ready');
+        });
+    // the headline is plain HTML and paints first; the scene arrives when the browser is idle
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1200 });
+    else setTimeout(start, 200);
+  }
+</script>
